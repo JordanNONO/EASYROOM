@@ -42,6 +42,9 @@ module.exports = {
 				onUpdate: "CASCADE",
 				onDelete: "CASCADE",
 			},
+			password: {
+				type: Sequelize.BOOLEAN,
+			},
 			createdAt: {
 				allowNull: false,
 				type: Sequelize.DATE,

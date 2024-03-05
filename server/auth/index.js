@@ -71,7 +71,7 @@ function localAuth(passport) {
 function jwtAuth(passport) {
 	const opts = {};
 	opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-	opts.secretOrKey = process.env.SECRET ?? "285dfeQs@@#";
+	opts.secretOrKey = process.env.SECRET ?? "hjshd@°#§@¦@°§°§¬¬|@°§°@§#¬§575dAj";
 	passport.use(
 		new JwtStrategy(opts, function (jwt_payload, done) {
 			db.User.findOne({ where: { id: jwt_payload.id }, raw: true }).then(
