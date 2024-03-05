@@ -1,5 +1,8 @@
 const { hashSync, compareSync } = require("bcryptjs");
-const { ValidateField } = require("../../middlewares/validation");
+const {
+	ValidateField,
+	ValidateParams,
+} = require("../../middlewares/validation");
 const db = require("../../models");
 const jwt = require("jsonwebtoken");
 const router = require("express").Router();
@@ -14,6 +17,31 @@ router.post("/add", ValidateField, async (req, res) => {
 			rent_house: req.body?.rent_house ?? false,
 		});
 		return res.status(201).json(newUser);
+	} catch (error) {
+		return res.status(500).send("Internal error");
+	}
+});
+router.post("/update/:id", ValidateField, ValidateParams, async (req, res) => {
+	try {
+		const { id } = req.params;
+		const newUser = await db.User.update(
+			{
+				...req.body,
+				password: hashSync(req.body?.password, 10),
+				rent_house: req.body?.rent_house ?? false,
+			},
+			{ where: { id } },
+		);
+		return res.status(200).json(newUser);
+	} catch (error) {
+		return res.status(500).send("Internal error");
+	}
+});
+router.post("/rent-house/:id", ValidateParams, async (req, res) => {
+	try {
+		const { id } = req.params;
+		await db.User.update({ rent_house: true }, { where: { id } });
+		return res.status(200).json({ state: "SUCCESS" });
 	} catch (error) {
 		return res.status(500).send("Internal error");
 	}

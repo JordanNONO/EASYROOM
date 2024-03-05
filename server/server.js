@@ -36,6 +36,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 jwtAuth(passport);
 localAuth(passport);
+
+app.use("/api/v1/user", require("./routes/api/user"));
+app.use("/api/v1/house", require("./routes/api/house"));
+app.use("/api/v1/favorite", require("./routes/api/favorite"));
+
 http.createServer(app).listen(4500, () => {
 	console.log("server run on port 4500");
 });
