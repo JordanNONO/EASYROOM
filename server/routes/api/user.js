@@ -5,9 +5,13 @@ const {
 } = require("../../middlewares/validation");
 const db = require("../../models");
 const jwt = require("jsonwebtoken");
+const { protect } = require("../../auth/auth");
 const router = require("express").Router();
 
-router.get("/:id", (req, res) => {});
+router.get("/me",protect(), (req, res) => {
+	
+	return res.status(200).json(req.user)
+});
 
 router.post("/add", ValidateField, async (req, res) => {
 	try {
@@ -22,7 +26,7 @@ router.post("/add", ValidateField, async (req, res) => {
 		return res.status(500).send("Internal error");
 	}
 });
-router.post("/update/:id", ValidateField, ValidateParams, async (req, res) => {
+router.post("/update/:id",protect(), ValidateField, ValidateParams, async (req, res) => {
 	try {
 		const { id } = req.params;
 		const newUser = await db.User.update(
@@ -38,10 +42,10 @@ router.post("/update/:id", ValidateField, ValidateParams, async (req, res) => {
 		return res.status(500).send("Internal error");
 	}
 });
-router.post("/rent-house/:id", ValidateParams, async (req, res) => {
+router.post("/rent-house",protect(), async (req, res) => {
 	try {
-		const { id } = req.params;
-		await db.User.update({ rent_house: true }, { where: { id } });
+		const id = req.user?.id;
+		await db.User.update({ ren_house: true }, { where: { id } });
 		return res.status(200).json({ state: "SUCCESS" });
 	} catch (error) {
 		return res.status(500).send("Internal error");
