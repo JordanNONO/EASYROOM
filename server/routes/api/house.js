@@ -8,12 +8,26 @@ const {
 
 router.get("/", async (_req, res) => {
 	try {
+		const houses = []
 		const house = await db.House.findAll({
-			include: ["Users", "House_image", "House_option", "House_advantage"],
+			include: ["User"],
 			raw: true,
 		});
-		return res.status(200).json(house);
+		for (const key in house) {
+			if (Object.hasOwnProperty.call(house, key)) {
+				const getHouse = house[key];
+				const images = await db.House_images.findAll({where:{house_id:getHouse?.id},raw:true})??[]
+				const options = await db.House_option.findAll({where:{house_id:getHouse?.id},raw:true})??[]
+				houses.push({...getHouse,images,options})
+				
+			}
+		}
+		
+		return res.status(200).json(houses);
+		
+		
 	} catch (error) {
+		console.log(error)
 		return res.status(500).send("Internal error");
 	}
 });
