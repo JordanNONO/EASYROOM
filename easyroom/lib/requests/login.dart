@@ -12,7 +12,7 @@ Future<void> login(BuildContext context,emailController,passwordController) asyn
     barrierDismissible: false,
     builder: (BuildContext context) {
       return const Center(
-        child: CircularProgressIndicator(color: Colors.teal,), // Display the CircularProgressIndicator
+        child: CircularProgressIndicator(color: Colors.amber,), // Display the CircularProgressIndicator
       );
     },
   );
