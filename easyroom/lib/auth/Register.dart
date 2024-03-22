@@ -46,7 +46,7 @@ class RegisterPage extends StatelessWidget{
                                   decoration: const InputDecoration(
                                     hintText: 'Nom',
                                     border: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.teal)
+                                        borderSide: BorderSide(color: Colors.blue)
                                     ),
 
                                   ),
@@ -83,7 +83,7 @@ class RegisterPage extends StatelessWidget{
                               decoration: const InputDecoration(
                                 hintText: 'Entrer votre numero de téléphone',
                                 border: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.amber)
+                                    borderSide: BorderSide(color: Colors.blue)
                                 ),
                               ),
                               validator: (String? value) {
@@ -150,7 +150,7 @@ class RegisterPage extends StatelessWidget{
                                   }
                                 },
                                 style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(Colors.amber),
+                                  backgroundColor: MaterialStateProperty.all(Colors.blue),
                                   padding: MaterialStateProperty.all(const EdgeInsets.all(15)),
 
                                 ),
@@ -165,7 +165,7 @@ class RegisterPage extends StatelessWidget{
                               children: [
                                 const Text("Avez-vous déjà un compte?"),
                                 TextButton(onPressed: (){
-                                  Navigator.push(context, MaterialPageRoute(builder:(context)=>LoginPage()));
+                                  Navigator.push(context, MaterialPageRoute(builder:(context)=>const LoginPage()));
                                 }, child: const Text("connectez-vous"))
                               ],
                             )

@@ -44,7 +44,7 @@ class LoginPage extends StatelessWidget{
                               fillColor: Colors.teal,
                               hintText: 'Votre contact',
                               border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.amber)
+                                  borderSide: BorderSide(color: Colors.blue)
                               ),
 
                             ),
@@ -93,7 +93,7 @@ class LoginPage extends StatelessWidget{
                                 }
                               },
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(Colors.amber.shade700),
+                                backgroundColor: MaterialStateProperty.all(Colors.blue.shade700),
                                 padding: MaterialStateProperty.all(const EdgeInsets.all(15)),
 
                               ),

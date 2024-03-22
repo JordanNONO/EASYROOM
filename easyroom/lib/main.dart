@@ -1,14 +1,21 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:easyroom/requests/constant.dart';
+import 'package:http/http.dart' as http;
 import 'package:easyroom/auth/Login.dart';
+import 'package:easyroom/models/User.dart';
 import 'package:easyroom/next_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+const storage = FlutterSecureStorage();
 void main(){
   runApp(
      MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
       home: const LoginPage(),
     )
@@ -22,6 +29,37 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  late User user;// Define a single User object
+
+  Future<User?> _fetchUser() async {
+    final token = await storage.read(key: 'token');
+
+    final response = await http.get(
+      Uri.parse('$BASE_URL/user/me'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    //print(response.statusCode);
+
+    if (response.statusCode == 200) {
+      final dynamic clientData = json.decode(response.body);
+      final client = User.fromJson(clientData as Map<String, dynamic>);
+      //print(clientData);
+      return client;
+    } else {
+      // Handle HTTP error here
+      print('HTTP Error: ${response.statusCode}');
+    }
+    return null;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+
+  }
 
   int index = 1;
   @override
@@ -32,26 +70,30 @@ class _MyAppState extends State<MyApp> {
              child: SingleChildScrollView(child: Column(
                crossAxisAlignment: CrossAxisAlignment.start,
                children: <Widget>[
-                 Row(
-                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                   children: <Widget>[
-                     const Text("Jordan NONO", style: TextStyle(
-                       fontSize: 18.0,
-                       fontWeight: FontWeight.bold,
-                       color: Colors.black,
+                 FutureBuilder(future: _fetchUser(), builder: (context,snapshot) {
+                   User user = snapshot.data!;
 
-                     ),),
-                     Container(
-                       width: 50.0,
-                       height: 50.0,
-                       decoration: const BoxDecoration(
-                           shape: BoxShape.circle,
-                           color: Colors.blue,
-                           image: DecorationImage(image: NetworkImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2-6LFf4RA6G-oVz-3vYd9clN_jfnG1Ir0hEiAnm2gMg&s"), fit: BoxFit.cover)
+                  return Row(
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                     children: <Widget>[
+                       Text("${user.name} ${user.lastname}", style: const TextStyle(
+                         fontSize: 18.0,
+                         fontWeight: FontWeight.bold,
+                         color: Colors.black,
+
+                       ),),
+                       Container(
+                         width: 50.0,
+                         height: 50.0,
+                         decoration: const BoxDecoration(
+                             shape: BoxShape.circle,
+                             color: Colors.blue,
+                             image: DecorationImage(image: NetworkImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2-6LFf4RA6G-oVz-3vYd9clN_jfnG1Ir0hEiAnm2gMg&s"), fit: BoxFit.cover)
+                         ),
                        ),
-                     ),
-                   ],
-                 ),
+                     ],
+                   );
+                 }),
                  const SizedBox(
                    height: 20.0,
                  ),
