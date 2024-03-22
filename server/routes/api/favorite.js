@@ -39,5 +39,5 @@ router.post("/set/:house_id", protect(), ValidateParams, async (req, res) => {
 				.json({ state: "SUCCESS", message: "Favorite set" });
 		}
 	} catch (error) {}
-}),
-	(module.exports = router);
+});
+module.exports = router

@@ -1,4 +1,5 @@
 import 'package:easyroom/auth/Register.dart';
+import 'package:easyroom/requests/login.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget{
@@ -7,7 +8,7 @@ class LoginPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-    final TextEditingController emailController = TextEditingController();
+    final TextEditingController contactController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
     return Scaffold(
         body: SafeArea(
@@ -37,19 +38,19 @@ class LoginPage extends StatelessWidget{
                           ),
                           const SizedBox(height: 20),
                           TextFormField(
-                            controller: emailController,
-                            keyboardType: TextInputType.emailAddress,
+                            controller: contactController,
+                            keyboardType: TextInputType.phone,
                             decoration: const InputDecoration(
                               fillColor: Colors.teal,
-                              hintText: 'Votre email',
+                              hintText: 'Votre contact',
                               border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.teal)
+                                  borderSide: BorderSide(color: Colors.amber)
                               ),
 
                             ),
                             validator: (String? value) {
                               if (value == null || value.isEmpty) {
-                                return 'L\'Email est requis';
+                                return 'Le contact est requis';
                               }
                               return null;
                             },
@@ -61,7 +62,7 @@ class LoginPage extends StatelessWidget{
                             obscureText: true,
                             obscuringCharacter: "*",
                             decoration: const InputDecoration(
-                              hintText: 'Créer un mot de passe',
+                              hintText: 'Votre mot de passe',
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.teal)
                               ),
@@ -83,7 +84,7 @@ class LoginPage extends StatelessWidget{
                                 // Add your login logic here
                                 // Typically, you would validate user input and authenticate the user.
                                 if(formKey.currentState!.validate()){
-                                  //login(context);
+                                  login(context, contactController, passwordController);
                                 }else {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
@@ -105,7 +106,7 @@ class LoginPage extends StatelessWidget{
                             children: [
                               const Text("Vous n'avez pas de compte"),
                               TextButton(onPressed: (){
-                                Navigator.push(context, MaterialPageRoute(builder:(context)=> RegisterPage()));
+                                Navigator.push(context, MaterialPageRoute(builder:(context)=> const RegisterPage()));
                               }, child: Text("Créer un compte"))
                             ],
                           )

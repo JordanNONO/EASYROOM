@@ -1,11 +1,15 @@
 import 'package:easyroom/auth/Login.dart';
+import 'package:easyroom/requests/register.dart';
 import 'package:flutter/material.dart';
 
 class RegisterPage extends StatelessWidget{
+  const RegisterPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-    final TextEditingController emailController = TextEditingController();
+    final TextEditingController nameController = TextEditingController();
+    final TextEditingController lastnameController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
     final TextEditingController contactController= TextEditingController();
     return Scaffold(
@@ -35,13 +39,51 @@ class RegisterPage extends StatelessWidget{
                                 )
                             ),
                             const SizedBox(height: 20),
+
+                                TextFormField(
+                                  controller: nameController,
+                                  keyboardType: TextInputType.text,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Nom',
+                                    border: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.teal)
+                                    ),
+
+                                  ),
+                                  validator: (String? value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Le nom est requis';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                            const SizedBox(height: 20),
+                                TextFormField(
+                                  controller: lastnameController,
+                                  keyboardType: TextInputType.text,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Prenom',
+                                    border: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.teal)
+                                    ),
+
+                                  ),
+                                  validator: (String? value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Le prenom est requis';
+                                    }
+                                    return null;
+                                  },
+                                ),
+
+                            const SizedBox(height: 20),
                             TextFormField(
                               controller: contactController,
                               keyboardType: TextInputType.phone,
                               decoration: const InputDecoration(
                                 hintText: 'Entrer votre numero de téléphone',
                                 border: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.teal)
+                                    borderSide: BorderSide(color: Colors.amber)
                                 ),
                               ),
                               validator: (String? value) {
@@ -51,24 +93,7 @@ class RegisterPage extends StatelessWidget{
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 20),
-                            TextFormField(
-                              controller: emailController,
-                              keyboardType: TextInputType.emailAddress,
-                              decoration: const InputDecoration(
-                                hintText: 'Votre email',
-                                border: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.teal)
-                                ),
 
-                              ),
-                              validator: (String? value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'L\'Email est requis';
-                                }
-                                return null;
-                              },
-                            ),
                             const SizedBox(height: 20),
                             TextFormField(
                               controller: passwordController,
@@ -116,7 +141,7 @@ class RegisterPage extends StatelessWidget{
                                   // Add your login logic here
                                   // Typically, you would validate user input and authenticate the user.
                                   if(formKey.currentState!.validate()){
-                                    //register(context);
+                                    register(context, nameController, contactController, passwordController, lastnameController);
                                   }else {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(

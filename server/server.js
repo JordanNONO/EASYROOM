@@ -5,11 +5,11 @@ const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const { localAuth, jwtAuth } = require("./auth/index");
-
+const cors = require("cors")
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
+app.use(cors())
 app.use(
 	session({
 		secret: "secret",
@@ -36,6 +36,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 jwtAuth(passport);
 localAuth(passport);
+
+app.use("/",require("./routes/index"))
 
 app.use("/api/v1/user", require("./routes/api/user"));
 app.use("/api/v1/house", require("./routes/api/house"));

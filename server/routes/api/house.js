@@ -65,4 +65,4 @@ router.delete(
 	},
 );
 
-module.export = router;
+module.exports = router
