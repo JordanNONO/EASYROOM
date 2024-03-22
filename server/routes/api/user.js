@@ -18,6 +18,7 @@ router.post("/add", ValidateField, async (req, res) => {
 		});
 		return res.status(201).json(newUser);
 	} catch (error) {
+		console.log(error)
 		return res.status(500).send("Internal error");
 	}
 });
@@ -51,7 +52,7 @@ router.post("/login", ValidateField, async (req, res) => {
 		const { contact, password } = req.body;
 		const user = await db.User.findOne({
 			where: { contact },
-			include: ["Gender"],
+			include: ["Gender","Role"],
 			raw: true,
 		});
 		if (!user)
@@ -77,6 +78,7 @@ router.post("/login", ValidateField, async (req, res) => {
 			return res.status(200).json({ state: "SUCCESS", token });
 		}
 	} catch (error) {
+		console.log(error)
 		return res.status(500).send("Internal error");
 	}
 });
