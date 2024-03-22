@@ -2,10 +2,8 @@ import 'dart:convert';
 import 'package:easyroom/requests/constant.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-AndroidOptions _getAndroidOptions() => const AndroidOptions(
-  encryptedSharedPreferences: true,
-);
-final storage = FlutterSecureStorage(aOptions: _getAndroidOptions());
+
+const storage = FlutterSecureStorage();
 
 Future<bool> registerRequest(String contact,String name,String lastname, String password) async {
   final response = await http.post(
@@ -35,7 +33,7 @@ Future<bool> LoginRequest(String contact, String password) async {
         'Content-Type': 'application/json',
       },
     );
-    print(response.statusCode);
+    //print(response.statusCode);
     if (response.statusCode == 200) {
       // Le serveur a renvoyé une réponse réussie, vous pouvez traiter la réponse ici.
       final Map<String, dynamic> data = jsonDecode(response.body);
