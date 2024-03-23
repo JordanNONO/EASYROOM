@@ -17,12 +17,33 @@ function Navbar() {
 					<Link to={""}>About us</Link>
 					<Link to={""}>Rental</Link>
 					<Link to={""}>Faq</Link>
-              </div>
-              <div className='flex items-center gap-2'>
-                  <Link className='text-blue' to={"/login"}>Login</Link>
-                  <span>/</span>
-                  <Button variant={"solid"} onClick={()=>navigate("/register")} >Register</Button>
-              </div>
+				</div>
+				<div className='flex items-center gap-2'>
+					{!sessionStorage.getItem("token") ? (
+						<>
+							<Link
+								className='text-blue'
+								to={"/login"}>
+								Login
+							</Link>
+							<span>/</span>
+							<Button
+								variant={"solid"}
+								onClick={() => navigate("/register")}>
+								Register
+							</Button>
+						</>
+					) : (
+						<>
+							<Button color={"gold"}>Rent house</Button>
+							<Button
+								variant={"solid"}
+								color={"red"}>
+								Déconnexion
+							</Button>
+						</>
+					)}
+				</div>
 			</div>
 		</nav>
 	);
