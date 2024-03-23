@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.heroes-bg{
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.514),rgba(255, 255, 255, 0.384)), url("./img/photo-1484154218962-a197022b5858.avif");
+  background-size: cover;
+  height: 70vh;
+}
