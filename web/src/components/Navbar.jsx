@@ -4,6 +4,9 @@ import { Link, useNavigate } from 'react-router-dom'
 
 function Navbar() {
     const navigate = useNavigate()
+    function rentHouse() {
+        fetch()
+    }
   return (
 		<nav>
 			<div className='flex justify-between items-center p-5'>

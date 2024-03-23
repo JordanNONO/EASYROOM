@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { ToastContainer } from "react-toastify";
+import PrivateRoute from "./components/PrivateRouter";
 
 function App() {
 	return (
@@ -13,8 +14,12 @@ function App() {
 				<Routes>
 					<Route
 						path='/'
-						element={<Home />}
-					/>
+						element={<PrivateRoute />}>
+						<Route
+							path='/'
+							element={<Home />}
+						/>
+					</Route>
 					<Route
 						path='/login'
 						element={<Login />}
