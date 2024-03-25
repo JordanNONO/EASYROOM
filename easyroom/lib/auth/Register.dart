@@ -153,6 +153,7 @@ class RegisterPage extends StatelessWidget{
                                   backgroundColor: MaterialStateProperty.all(Colors.blue),
                                   padding: MaterialStateProperty.all(const EdgeInsets.all(15)),
 
+
                                 ),
 
                                 child: const Text('Créer un compte',style: TextStyle(color: Colors.white),),

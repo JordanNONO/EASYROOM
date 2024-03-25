@@ -1,9 +1,11 @@
+import 'package:easyroom/models/House.dart';
+import 'package:easyroom/requests/constant.dart';
 import 'package:flutter/material.dart';
 
 
 class NextPage extends StatefulWidget {
-  const NextPage({super.key});
-
+  const NextPage({super.key, required this.house});
+  final House house;
   @override
   State<NextPage> createState() => _NextPageState();
 }
@@ -18,8 +20,8 @@ class _NextPageState extends State<NextPage> {
       body: Stack(
         children: <Widget>[
           SizedBox(height: screenHeight * 0.4,child: Hero(
-          tag: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2-6LFf4RA6G-oVz-3vYd9clN_jfnG1Ir0hEiAnm2gMg&s",
-          child: Image.network("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2-6LFf4RA6G-oVz-3vYd9clN_jfnG1Ir0hEiAnm2gMg&s", fit: BoxFit.cover)),),
+          tag: "$API_URL/${widget.house.images.last.image}",
+          child: Image.network("$API_URL/${widget.house.images.first.image}", fit: BoxFit.cover)),),
           Container(
             margin: EdgeInsets.only(top: screenHeight * 0.3),
             child: SingleChildScrollView(child: Material(
@@ -31,20 +33,20 @@ class _NextPageState extends State<NextPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    const Row(
+                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text("20.000 Fcfa", style: TextStyle(
+                          Text("${widget.house.price} FCFA", style: const TextStyle(
                             color: Colors.blue,
                             fontSize: 30.0,
                             fontWeight: FontWeight.bold,
                           ),),
-                          Icon(Icons.bookmark_border, color: Colors.blue,)
+                          const Icon(Icons.bookmark_border, color: Colors.blue,)
                         ]
 
                     ),
                     const SizedBox(height: 20.0,),
-                    const Text("Family Home", style: TextStyle(
+                     Text(widget.house.label, style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20.0,
                     ),),
@@ -68,17 +70,17 @@ class _NextPageState extends State<NextPage> {
                     const SizedBox(height: 10.0,),
                     const Divider(),
                     const SizedBox(height: 10.0,),
-                    Text("Home Loan Calculator", style: TextStyle(
+                    Text(widget.house.description, style: TextStyle(
                       color: Colors.black.withOpacity(.8),
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
                     ),),
                     const SizedBox(height: 10.0,),
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text("25 000/mois"),
-                        Icon(Icons.question_answer, color: Colors.blue,),
+                        Text("${widget.house.price} /mois"),
+                        const Icon(Icons.question_answer, color: Colors.blue,),
                       ],
                     ),
                     const SizedBox(height: 20.0,),
@@ -89,7 +91,7 @@ class _NextPageState extends State<NextPage> {
                     const SizedBox(height: 10.0,),
                     const Text("Apply for conditional approval"),
                     const SizedBox(height: 10.0,),
-                    Image.network("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQObZpMkz19FeRlfRf--fO3xtms2A_niFL8w&usqp=CAU"),
+                    //Image.network("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQObZpMkz19FeRlfRf--fO3xtms2A_niFL8w&usqp=CAU"),
                     const SizedBox(height: 10.0,),
                     Row(
                       children: <Widget>[

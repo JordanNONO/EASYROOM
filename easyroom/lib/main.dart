@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
+import 'package:easyroom/models/House.dart';
 import 'package:easyroom/requests/constant.dart';
 import 'package:http/http.dart' as http;
 import 'package:easyroom/auth/Login.dart';
@@ -53,6 +55,29 @@ class _MyAppState extends State<MyApp> {
     }
     return null;
   }
+  Future<List<House>?> _fetchHouse() async {
+    final token = await storage.read(key: 'token');
+
+    final response = await http.get(
+      Uri.parse('$BASE_URL/house'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    //print(response.statusCode);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> houseDataList = json.decode(response.body);
+      final List<House> houses = houseDataList.map((houseData) => House.fromJson(houseData)).toList();
+      print(houses);
+      return houses;
+    } else {
+      // Handle HTTP error here
+      print('HTTP Error: ${response.statusCode}');
+    }
+    return null;
+  }
+
 
   @override
   void initState() {
@@ -166,15 +191,26 @@ class _MyAppState extends State<MyApp> {
                  const SizedBox(height: 20.0,),
                  SizedBox(
                    height: 400.0,
-                   child: ListView(
-                     scrollDirection: Axis.horizontal,
-                     children: <Widget>[
-                       homeWidget(),
-                       homeWidget(),
-                       homeWidget(),
-                       homeWidget(),
-                     ],
-                   ),
+                   child:
+
+                       FutureBuilder(future: _fetchHouse(), builder: (context,snapshot){
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Erreur : ${snapshot
+                              .error}'));
+                        }else
+                         if(snapshot.hasData){
+                           return ListView.builder(itemCount: snapshot.data!.length, scrollDirection: Axis.horizontal,  itemBuilder: (context,index){
+                             return homeWidget(snapshot.data![index]);
+
+                           });
+                         }
+                         return const Text("No data");
+                       })
+
+
+
                  )
                ],
              ),)
@@ -212,11 +248,11 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
-  Widget homeWidget(){
+  Widget homeWidget(House house){
     return InkWell(
       onTap: (){
        Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-         return const NextPage();
+         return NextPage( house: house,);
        }));
       },
       child: Container(
@@ -226,19 +262,20 @@ class _MyAppState extends State<MyApp> {
         child: Stack(
           children: <Widget>[
             Hero(
-              tag: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2-6LFf4RA6G-oVz-3vYd9clN_jfnG1Ir0hEiAnm2gMg&s",
+              tag: "$API_URL/${house.images.first.image}",
               child: Container(
-              
+
                 width: 350.0,
                 height: 400.0,
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
+                decoration: BoxDecoration(
+
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(30.0),
                       bottomLeft: Radius.circular(30.0),
                       bottomRight: Radius.circular(30.0),
                     ),
                     image: DecorationImage(
-                        image: NetworkImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2-6LFf4RA6G-oVz-3vYd9clN_jfnG1Ir0hEiAnm2gMg&s"),
+                        image: NetworkImage("$API_URL/${house.images.first.image}"),
                         fit: BoxFit.cover
                     )
                 ),
@@ -256,28 +293,29 @@ class _MyAppState extends State<MyApp> {
               },
               ),
             ),
-            const Positioned(
+            Positioned(
               bottom: 40,
               left: 20,
-              child: Column(
+              child:  Column(
 
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text("Family House", style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold
-                  ),),
-                  Row(
-                    children: <Widget>[
-                      Icon(Icons.location_on, color: Colors.white,),
-                      Text("Yangor, Shwe Taung kyar", style: TextStyle(
-                          color: Colors.white
-                      ),)
-                    ],
-                  )
-                ],
-              ),
-            )
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(house.label, style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold
+                    ),),
+                    Row(
+                      children: <Widget>[
+                        const Icon(Icons.location_on, color: Colors.white,),
+                        Text(house.location, style: const TextStyle(
+                            color: Colors.white
+                        ),)
+                      ],
+                    )
+                  ],
+                ),
+              )
+
           ],
         ),
       ),
