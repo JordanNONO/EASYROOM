@@ -37,6 +37,7 @@ export const ADD_HOUSE_PATH = {
 	method: "POST",
 	headers: {
 		Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+		//"Content-type": "application/json",
 	},
 };
 

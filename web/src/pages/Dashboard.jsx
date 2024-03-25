@@ -1,6 +1,7 @@
 import { Card, Container, Flex, Heading } from '@radix-ui/themes'
 import {FaBuilding} from "react-icons/fa6"
 import React from 'react'
+import AddHouseForm from '../components/AddHouseForm';
 
 function Dashboard() {
   return (
@@ -26,7 +27,7 @@ function Dashboard() {
 						</Flex>
 					</Card>
               </Flex>
-              
+              <AddHouseForm/>
 			</Container>
 		</div>
 	);
