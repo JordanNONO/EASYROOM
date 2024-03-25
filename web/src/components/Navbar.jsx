@@ -1,4 +1,4 @@
-import { Avatar, Button } from '@radix-ui/themes';
+import { Avatar, Button, DropdownMenu } from '@radix-ui/themes';
 import React from 'react'
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom'
@@ -29,7 +29,7 @@ function Navbar() {
 				</Link>
 				<div className='flex items-center gap-5 text-lg'>
 					<Link to={""}>Home</Link>
-					<Link to={""}>About us</Link>
+					<Link to={""}>Location</Link>
 					<Link to={""}>Rental</Link>
 					<Link to={""}>Faq</Link>
 				</div>
@@ -50,6 +50,17 @@ function Navbar() {
 						</>
 					) : (
 						<>
+						<DropdownMenu.Root>
+							<DropdownMenu.Trigger>
+								<div>
+								<Avatar
+									
+									fallback={String(user.name).at(0)+ String(user.lastname).at(0)}
+								/>
+								
+								</div>
+							</DropdownMenu.Trigger>
+							<DropdownMenu.Content>
 							{user?.ren_house === 0 ? (
 								<Button
 									color={"gold"}
@@ -63,15 +74,16 @@ function Navbar() {
 									Dashboard
 								</Button>
 							)}
-							<Avatar
-								
-								fallback={String(user.name).at(0)+ String(user.lastname).at(0)}
-							/>
+							<DropdownMenu.Separator />
+							
 							<Button
 								variant={"solid"}
 								color={"red"}>
 								Déconnexion
 							</Button>
+							</DropdownMenu.Content>
+						</DropdownMenu.Root>
+							
 						</>
 					)}
 				</div>
