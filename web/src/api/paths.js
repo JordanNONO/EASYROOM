@@ -37,11 +37,12 @@ export const ADD_HOUSE_PATH = {
 	method: "POST",
 	headers: {
 		Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+		//"Content-type": "application/json",
 	},
 };
 
 export const RENT_HOUSE_PATH = {
-	url: `${BASE_URL}/rent-house`,
+	url: `${BASE_URL}/user/rent-house`,
 	method: "POST",
 	headers: {
 		Authorization: `Bearer ${sessionStorage.getItem("token")}`,

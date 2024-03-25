@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { ToastContainer } from "react-toastify";
 import PrivateRoute from "./components/PrivateRouter";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
 	return (
@@ -18,6 +19,14 @@ function App() {
 						<Route
 							path='/'
 							element={<Home />}
+						/>
+					</Route>
+					<Route
+						path='/dashboard'
+						element={<PrivateRoute />}>
+						<Route
+							path='/dashboard'
+							element={<Dashboard />}
 						/>
 					</Route>
 					<Route

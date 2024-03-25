@@ -44,6 +44,8 @@ module.exports = (sequelize, DataTypes) => {
 			has_kitchen: DataTypes.BOOLEAN,
 			nbre_bedroom: DataTypes.INTEGER,
 			is_rent: DataTypes.BOOLEAN,
+			price:DataTypes.INTEGER,
+			description: DataTypes.TEXT,
 			user_id: DataTypes.INTEGER,
 		},
 		{

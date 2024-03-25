@@ -7,7 +7,6 @@ class User {
   final String? birthday;
   final int? genderId;
   final int roleId;
-  final String password;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -20,7 +19,6 @@ class User {
     this.birthday,
     this.genderId,
     required this.roleId,
-    required this.password,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -35,7 +33,7 @@ class User {
       birthday: json['birthday'],
       genderId: json['gender_id'],
       roleId: json['role_id'],
-      password: json['password'],
+
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
     );

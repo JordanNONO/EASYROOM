@@ -1,11 +1,23 @@
-import { Button } from '@radix-ui/themes';
+import { Avatar, Button } from '@radix-ui/themes';
 import React from 'react'
+import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom'
+import { RENT_HOUSE_PATH } from '../api/paths';
+import { toast } from 'react-toastify';
 
 function Navbar() {
     const navigate = useNavigate()
+    const user = useSelector((state)=>state.UserReduce.userData)
     function rentHouse() {
-        fetch()
+        fetch(RENT_HOUSE_PATH.url, {
+					...RENT_HOUSE_PATH,
+				})
+					.then(async (r) => {
+						if (r.status === 200) {
+							toast.success("Eh bien....");
+						}
+					})
+					.catch((err) => {});
     }
   return (
 		<nav>
@@ -38,7 +50,23 @@ function Navbar() {
 						</>
 					) : (
 						<>
-							<Button color={"gold"}>Rent house</Button>
+							{user?.ren_house === 0 ? (
+								<Button
+									color={"gold"}
+									onClick={rentHouse}>
+									Rent house
+								</Button>
+							) : (
+								<Button
+									color={"gold"}
+									onClick={() => navigate("/dashboard")}>
+									Dashboard
+								</Button>
+							)}
+							<Avatar
+								
+								fallback={String(user.name).at(0)+ String(user.lastname).at(0)}
+							/>
 							<Button
 								variant={"solid"}
 								color={"red"}>
