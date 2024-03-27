@@ -1,0 +1,65 @@
+import 'package:flutter/material.dart';
+
+class HousePage extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() => _HousePage();
+
+}
+
+class _HousePage extends State<HousePage>{
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+
+      body: SafeArea(
+        child: Container(
+          child: Column(
+            children: [
+              SearchAnchor(builder: (BuildContext context, SearchController controller){
+                return SearchBar(
+                  hintText: "Dit moi, quelle maison tu veux...",
+                  controller: controller,
+                  padding: const MaterialStatePropertyAll<EdgeInsets>(
+                      EdgeInsets.symmetric(horizontal: 16.0)),
+                  onTap: () {
+                    controller.openView();
+                  },
+                  onChanged: (_) {
+                    controller.openView();
+                  },
+                  leading: const Icon(Icons.search),
+                );
+              }, suggestionsBuilder:  (BuildContext context, SearchController controller){
+                return List<ListTile>.generate(5, (int index) {
+                  final String item = 'item $index';
+                  return ListTile(
+                    title: Text(item),
+                    onTap: () {
+                      setState(() {
+                        controller.closeView(item);
+                      });
+                    },
+                  );
+                });
+              }),
+              const SizedBox(height: 15,),
+              Expanded(child: ListView.builder(itemCount: 205, itemBuilder: (context,index){
+                return ListTile(
+                  title: Text("Chambre salon + wc douche interne"),
+                  leading: Container(child: Image.network("https://images.unsplash.com/photo-1501183638710-841dd1904471?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),),
+                  subtitle: Text("Nouvelle construction", style: TextStyle(color: Colors.grey),),
+                  trailing: Column(
+                    children: [
+                      Icon(Icons.favorite_border_outlined),
+                      Text("15000 F/mois",style: TextStyle(fontWeight: FontWeight.w700),),
+                    ],
+                  ),
+                );
+              }))
+            ],
+          ),
+        ),
+      )
+    );
+  }
+}
