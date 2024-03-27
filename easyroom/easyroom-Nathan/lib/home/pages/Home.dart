@@ -18,12 +18,15 @@ class _MainHomePage extends State<MainHomePage>{
           padding: const EdgeInsets.all(10),
           child: Column(
             children: <Widget>[
-              Row(
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text("Francis ALAPHIA", style: TextStyle(fontWeight: FontWeight.w800),),
-                  CircleAvatar(backgroundColor: Colors.blue.shade200,child: const Padding(padding:EdgeInsets.all(1),child: Icon(Icons.person,size: 35,),),)
+                  Text("Francis ALAPHIA", style: TextStyle(fontWeight: FontWeight.w800,fontSize: 25)),
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundImage: AssetImage('assets/images/default.png'),
+                  ),
                 ],
               ),
               const SizedBox(height: 35,),
@@ -66,10 +69,10 @@ class _MainHomePage extends State<MainHomePage>{
               const SizedBox(height: 20,),
               Expanded(child: ListView.builder(itemCount: 5, itemBuilder: (context,index){
                 return ListTile(
-                  title: Text("Chambre salon + wc douche interne"),
+                  title: const Text("Chambre salon + wc douche interne"),
                   leading: Container(child: Image.network("https://images.unsplash.com/photo-1501183638710-841dd1904471?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),),
-                  subtitle: Text("Nouvelle construction", style: TextStyle(color: Colors.grey),),
-                  trailing: Text("15000 F/mois",style: TextStyle(fontWeight: FontWeight.w700),),
+                  subtitle: const Text("Nouvelle construction", style: TextStyle(color: Colors.grey),),
+                  trailing: const Text("15000 F/mois",style: TextStyle(fontWeight: FontWeight.w700),),
                 );
               }))
 
