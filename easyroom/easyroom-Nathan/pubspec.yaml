@@ -12,6 +12,8 @@ dependencies:
   concentric_transition: ^1.0.3
   cupertino_icons: ^1.0.6
   flutter_svg: ^2.0.10+1
+  flutter_secure_storage: ^9.0.0
+  http: ^1.2.1
   # Vérifiez cette ligne pour vous assurer qu'elle a la bonne indentation et la bonne structure
   flutter:
     sdk: flutter
