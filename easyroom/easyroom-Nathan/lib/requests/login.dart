@@ -1,4 +1,4 @@
-import 'package:easyroom/main.dart';
+import 'package:easyroom/home/index.dart';
 import 'package:easyroom/requests/requests.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +27,7 @@ Future<void> login(BuildContext context,emailController,passwordController) asyn
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const MyApp(), // Replace MainPage with the destination page.
+        builder: (context) => HomePage(), // Replace MainPage with the destination page.
       ),
     );
 
