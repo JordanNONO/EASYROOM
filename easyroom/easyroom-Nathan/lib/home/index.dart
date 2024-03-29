@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:easyroom/home/pages/Home.dart';
 import 'package:easyroom/home/pages/House.dart';
 import 'package:easyroom/home/pages/Profile.dart';
 import 'package:easyroom/home/pages/Reservation.dart';
+import 'package:easyroom/models/House.dart';
+import 'package:easyroom/models/User.dart';
+import 'package:easyroom/requests/constant.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget{
@@ -14,10 +19,12 @@ class _HomePage extends State<HomePage>{
 
     int currentPageIndex = 0;
 
+
     @override
      Widget build(BuildContext context) {
       final ThemeData theme = Theme.of(context);
       return Scaffold(
+
         bottomNavigationBar: NavigationBar(
           onDestinationSelected: (int index) {
             setState(() {
@@ -53,9 +60,9 @@ class _HomePage extends State<HomePage>{
           ],
         ),
         body: <Widget>[
-          MainHomePage(),
+          const MainHomePage(),
           HousePage(),
-          ReservationPage(),
+          const ReservationPage(),
           ProfilePage()
 
         ][currentPageIndex],
