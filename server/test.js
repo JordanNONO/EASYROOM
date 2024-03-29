@@ -1,6 +1,36 @@
-const { decode } = require("jsonwebtoken")
+const data = [
+    { house_id: 3, user_id: 1 },
+    { house_id: 3, user_id: 1 },
+    { house_id: 3, user_id: 1 },
+    { house_id: 2, user_id: 3 },
+    { house_id: 1, user_id: 2 },
+    { house_id: 2, user_id: 1 },
+    { house_id: 3, user_id: 3 }
+];
 
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwibmFtZSI6IkZyYW5jaXMiLCJsYXN0bmFtZSI6IkFMQVBISUEiLCJjb250YWN0IjoiOTE1OTU5MTQiLCJyZW5faG91c2UiOjEsImJpcnRoZGF5IjpudWxsLCJnZW5kZXJfaWQiOm51bGwsInJvbGVfaWQiOjEsImNyZWF0ZWRBdCI6IjIwMjQtMDMtMjJUMTQ6MjQ6NDEuMDAwWiIsInVwZGF0ZWRBdCI6IjIwMjQtMDMtMjJUMTU6Mjc6MDcuMDAwWiIsIkdlbmRlci5pZCI6bnVsbCwiR2VuZGVyLmxhYmVsIjpudWxsLCJHZW5kZXIuY3JlYXRlZEF0IjpudWxsLCJHZW5kZXIudXBkYXRlZEF0IjpudWxsLCJSb2xlLmlkIjoxLCJSb2xlLmxhYmVsIjoiYWRtaW4iLCJSb2xlLmNyZWF0ZWRBdCI6IjIwMjQtMDMtMjJUMTI6MTY6MDkuMDAwWiIsIlJvbGUudXBkYXRlZEF0IjpudWxsLCJpYXQiOjE3MTExMzM2MjIsImV4cCI6MTcxMTIyMDAyMn0.inK9pSl8ljwDAGIWw0giuJHIJrwFfKjbYhJkc3eqHgA"
-const mpd_chiffrement = "hjshd@°#§@¦@°§°§¬¬|@°§°@§#¬§575dAj"
+function getHouseRecommendations(userId, data, numRecommendations = 3) {
+    // Filtrer les données pour obtenir les maisons visitées par l'utilisateur donné
+    const visitedHouses = data.filter(item => item.user_id === userId)
+                              .map(item => item.house_id);
 
-console.log(decode(token,mpd_chiffrement))
+    // Compter la fréquence de chaque maison visitée
+    const houseFrequency = visitedHouses.reduce((acc, houseId) => {
+        acc[houseId] = (acc[houseId] || 0) + 1;
+        return acc;
+    }, {});
+
+    // Trier les maisons par fréquence décroissante
+    const sortedHouses = Object.keys(houseFrequency).sort((a, b) => houseFrequency[b] - houseFrequency[a]);
+
+    // Retourner les meilleures recommandations (maisons non visitées par l'utilisateur)
+    const recommendations = sortedHouses.filter(houseId => !visitedHouses.includes(Number(houseId)))
+                                        .slice(0, numRecommendations)
+                                        .map(houseId => ({ house_id: Number(houseId) }));
+
+    return recommendations.length > 0 ? recommendations : "Aucune recommandation disponible pour cet utilisateur.";
+}
+
+// Exemple d'utilisation
+const userId = 1;
+const recommendations = getHouseRecommendations(userId, data);
+console.log(`Recommandations pour l'utilisateur ${userId}:`, recommendations);

@@ -5,7 +5,8 @@ const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const { localAuth, jwtAuth } = require("./auth/index");
-const cors = require("cors")
+const cors = require("cors");
+const { swaggerUi, specs } = require("./swagger");
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -43,6 +44,8 @@ app.use("/",require("./routes/index"))
 app.use("/api/v1/user", require("./routes/api/user"));
 app.use("/api/v1/house", require("./routes/api/house"));
 app.use("/api/v1/favorite", require("./routes/api/favorite"));
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 http.createServer(app).listen(4500, () => {
 	console.log("server run on port 4500");
