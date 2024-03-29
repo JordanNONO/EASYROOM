@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:easyroom/Screens/Login/login_screen.dart';
+import 'package:easyroom/home/pages/HouseDetail.dart';
 import 'package:easyroom/models/House.dart';
 import 'package:easyroom/models/User.dart';
 import 'package:easyroom/requests/constant.dart';
@@ -37,6 +39,7 @@ class _MainHomePage extends State<MainHomePage> {
     } else {
       // Handle HTTP error here
       print('HTTP Error: ${response.statusCode}');
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>const LoginScreen()));
     }
     return null;
   }
@@ -171,7 +174,13 @@ class _MainHomePage extends State<MainHomePage> {
                             itemBuilder: (context, index) {
                               return ListTile(
                                 title: Text(house[index].label),
-                                leading: Image.network("${API_URL}/${house[index].images.first.image}"),
+                                leading: Image.network("${API_URL}/${house[index].images.first.image}",height: 300, width: 80,
+                                  fit: BoxFit.cover,),
+                                onTap: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                    return  HomeRentDetailPage(house:house[index]);
+                                  },));
+                                },
                                 subtitle: Text(
                                   house[index].description,
                                   style: const TextStyle(color: Colors.grey),

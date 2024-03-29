@@ -14,7 +14,7 @@ Future<void> register(BuildContext context,nameController,contactController,pass
     barrierDismissible: false,
     builder: (BuildContext context) {
       return const Center(
-        child: CircularProgressIndicator(color: Colors.teal,), // Display the CircularProgressIndicator
+        child: CircularProgressIndicator(color: Colors.blue,), // Display the CircularProgressIndicator
       );
     },
   );

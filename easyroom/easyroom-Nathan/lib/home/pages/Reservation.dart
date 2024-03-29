@@ -36,7 +36,7 @@ class _ReservationPage extends State<ReservationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reservation List'),
+        title: const Text('Reservations'),
         automaticallyImplyLeading: false,
         centerTitle: true,
       ),
