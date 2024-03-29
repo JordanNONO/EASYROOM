@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:easyroom/Screens/Login/login_screen.dart';
+import 'package:easyroom/home/pages/AddHousePage.dart';
 import 'package:easyroom/home/pages/profileEdit.dart';
 import 'package:easyroom/models/User.dart';
 import 'package:easyroom/requests/constant.dart';
@@ -90,6 +91,20 @@ class _ProfilePage extends State<ProfilePage>{
                       );
                     },
                     child: const Text('Edit Profile'),
+                  ),
+                  const SizedBox(height: 20),
+                  if(user.renHouse != null ) ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return const AddHousePage();
+                          },
+                        ),
+                      );
+                    },
+                    child: const Text('Ajouter une maison'),
                   ),
                   const SizedBox(height: 20),
                   const ListTile(
