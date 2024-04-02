@@ -1,5 +1,5 @@
 import 'package:easyroom/home/index.dart';
-import 'package:easyroom/requests/requests.dart';
+import 'package:easyroom/requests/ApiService.dart';
 import 'package:flutter/material.dart';
 
 Future<void> login(BuildContext context,emailController,passwordController) async {
@@ -17,7 +17,7 @@ Future<void> login(BuildContext context,emailController,passwordController) asyn
     },
   );
 
-  final user = await LoginRequest(username, password);
+  final user = await ApiService.LoginRequest(username, password);
 
   // Dismiss the progress indicator dialog
   print(user);

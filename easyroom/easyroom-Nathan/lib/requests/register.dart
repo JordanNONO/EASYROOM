@@ -1,5 +1,5 @@
 import 'package:easyroom/Screens/Login/login_screen.dart';
-import 'package:easyroom/requests/requests.dart';
+import 'package:easyroom/requests/ApiService.dart';
 import 'package:flutter/material.dart';
 
 Future<void> register(BuildContext context,nameController,contactController,passwordController,lastNameController) async {
@@ -20,7 +20,7 @@ Future<void> register(BuildContext context,nameController,contactController,pass
   );
 
   //print("$contact,$email,$password");
-  final user = await registerRequest(contact, name,lastname, password);
+  final user = await ApiService.registerRequest(contact, name,lastname, password);
 
   // Dismiss the progress indicator dialog
   print(user);
