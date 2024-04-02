@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:easyroom/models/House.dart';
 import 'package:easyroom/requests/constant.dart';
 
+import '../../models/User.dart';
+
 class HomeRentDetailPage extends StatelessWidget {
   final House house;
+  final User? user;
 
-  const HomeRentDetailPage({super.key, required this.house});
+  const HomeRentDetailPage({super.key, required this.house, this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -99,12 +102,19 @@ class HomeRentDetailPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  // Action à effectuer lorsque le bouton est pressé
-                },
-                child: const Text('Reserver dès maintenant'),
-              ),
+             if(user?.id == house.user.id)
+                 ElevatedButton(onPressed: (){
+
+                 },style: const ButtonStyle(
+                     backgroundColor: MaterialStatePropertyAll(Colors.amber)
+                 ), child: const Text("Modifier"),)
+
+              else ElevatedButton(
+               onPressed: () {
+                 // Action à effectuer lorsque le bouton est pressé
+               },
+               child: const Text('Reserver dès maintenant'),
+             ),
             ],
           ),
         ),

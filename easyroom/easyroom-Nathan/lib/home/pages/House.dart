@@ -10,6 +10,8 @@ import 'package:http/http.dart' as http;
 const storage = FlutterSecureStorage();
 
 class HousePage extends StatefulWidget {
+  const HousePage({super.key});
+
   @override
   State<StatefulWidget> createState() => _HousePage();
 }

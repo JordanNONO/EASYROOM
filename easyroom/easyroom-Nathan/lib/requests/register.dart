@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 Future<void> register(BuildContext context,nameController,contactController,passwordController,lastNameController) async {
   final contact = contactController.text;
   final name = nameController.text;
-  final lastname = lastNameController;
+  final lastname = lastNameController.text;
   final password = passwordController.text;
 
   // Show the progress indicator while performing the login operation.

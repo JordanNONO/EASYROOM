@@ -88,9 +88,7 @@ class _AddHousePageState extends State<AddHousePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ajouter une maison'),
-      ),
+     
       body: SingleChildScrollView(
           child: Form(
               child: Padding(
