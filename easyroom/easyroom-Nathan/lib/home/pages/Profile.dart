@@ -4,6 +4,7 @@ import 'package:easyroom/Screens/Login/login_screen.dart';
 import 'package:easyroom/constants.dart';
 import 'package:easyroom/home/pages/AddHousePage.dart';
 import 'package:easyroom/home/pages/_profile/MyHouseList.dart';
+import 'package:easyroom/home/pages/_profile/ReservationList.dart';
 import 'package:easyroom/home/pages/_profile/main.dart';
 import 'package:easyroom/models/User.dart';
 import 'package:easyroom/requests/constant.dart';
@@ -74,7 +75,7 @@ class _ProfilePage extends State<ProfilePage> {
             ),
           )),
       home: DefaultTabController(
-        length: 3,
+        length: 4,
         child: Scaffold(
             appBar: AppBar(
               bottom: const TabBar(
@@ -90,6 +91,10 @@ class _ProfilePage extends State<ProfilePage> {
                   Tab(
                     icon: Icon(Icons.add_home_work_outlined),
                     text: "Ajouter une maison",
+                  ),
+                  Tab(
+                    icon: Icon(Icons.home_outlined),
+                    text: "Mes maisons",
                   )
                 ],
                 indicatorColor: Colors.blue,
@@ -114,9 +119,10 @@ class _ProfilePage extends State<ProfilePage> {
                   final user = snapshot.data!;
                   return TabBarView(
                     children: [
-                      ProfileMain(),
+                      const ProfileMain(),
+                      const ReservationList(),
+                      const AddHousePage(),
                       MyHouseListPage(user:user),
-                      AddHousePage()
                     ],
                   );
                 }

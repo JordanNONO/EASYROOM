@@ -89,6 +89,41 @@ router.get("/", protect(), async (_req, res) => {
 
 /**
  * @swagger
+ * /api/v1/house/me:
+ *   get:
+ *     description: Get all houses by user
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved all houses
+ */
+
+router.get("/me", protect(), async (_req, res) => {
+	try {
+		const houses = [];
+		const house = await db.House.findAll({
+			include: ["User"],
+			where:{user_id:_req.user.id},
+			raw: true,
+		});
+		for (const key in house) {
+			if (Object.hasOwnProperty.call(house, key)) {
+				const getHouse = house[key];
+				const images = await db.House_images.findAll({ where: { house_id: getHouse?.id }, raw: true }) ?? [];
+				const options = await db.House_option.findAll({ where: { house_id: getHouse?.id }, raw: true }) ?? [];
+				houses.push({ ...getHouse, has_bathroom:getHouse.has_bathroom===1,has_kitchen:getHouse.has_kitchen===1, is_rent:getHouse.is_rent===1, images, options });
+			}
+		}
+		return res.status(200).json(houses);
+	} catch (error) {
+		console.log(error);
+		return res.status(500).send("Internal error");
+	}
+});
+
+/**
+ * @swagger
  * /api/v1/house/add:
  *   post:
  *     description: Add a new house

@@ -1,9 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'dart:convert';
-
 import 'package:easyroom/Screens/Login/login_screen.dart';
-import 'package:easyroom/home/pages/AddHousePage.dart';
 import 'package:easyroom/home/pages/profileEdit.dart';
 import 'package:easyroom/models/User.dart';
 import 'package:easyroom/models/House.dart'; // Import du modèle House
@@ -47,7 +45,7 @@ class _ProfileMainState extends State<ProfileMain> {
     final token = await storage.read(key: 'token');
 
     final response = await http.get(
-      Uri.parse('$BASE_URL/house'),
+      Uri.parse('$BASE_URL/house/me'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -113,7 +111,7 @@ class _ProfileMainState extends State<ProfileMain> {
                       child: const Text('Edit Profile'),
                     ),
                     const SizedBox(height: 20),
-                    if (user.renHouse != null)
+                   /* if (user.renHouse != null)
                       ElevatedButton(
                         onPressed: () {
                           Navigator.push(
@@ -126,7 +124,7 @@ class _ProfileMainState extends State<ProfileMain> {
                           );
                         },
                         child: const Text('Ajouter une maison'),
-                      ),
+                      ),*/
                     const SizedBox(height: 20),
                     const ListTile(
                       leading: Icon(Icons.email),
@@ -151,12 +149,9 @@ class _ProfileMainState extends State<ProfileMain> {
                     ),
                     const SizedBox(height: 20),
                     // Dernières maisons publiées
-                    const Text(
-                      'Dernières maisons publiées',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
+
                     const SizedBox(height: 10),
-                    ListView.builder(
+                    /*ListView.builder(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemCount: recentHouses.length,
@@ -170,7 +165,7 @@ class _ProfileMainState extends State<ProfileMain> {
                           subtitle: Text(house.location),
                         );
                       },
-                    ),
+                    ),*/
                   ],
                 );
               } else if (snapshot.hasError) {
