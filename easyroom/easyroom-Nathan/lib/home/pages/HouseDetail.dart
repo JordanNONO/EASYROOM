@@ -1,8 +1,18 @@
+import 'package:easyroom/home/pages/addReservation.dart';
 import 'package:flutter/material.dart';
 import 'package:easyroom/models/House.dart';
 import 'package:easyroom/requests/constant.dart';
 
 import '../../models/User.dart';
+
+void _showAddReservationModal(BuildContext context, House house) {
+  showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      return AddReservationModal(house: house,);
+    },
+  );
+}
 
 class HomeRentDetailPage extends StatelessWidget {
   final House house;
@@ -112,6 +122,7 @@ class HomeRentDetailPage extends StatelessWidget {
               else ElevatedButton(
                onPressed: () {
                  // Action à effectuer lorsque le bouton est pressé
+                 _showAddReservationModal(context,house);
                },
                child: const Text('Reserver dès maintenant'),
              ),

@@ -14,6 +14,7 @@ dependencies:
   flutter_svg: ^2.0.10+1
   flutter_secure_storage: ^9.0.0
   http: ^1.2.1
+  date_field: ^4.0.0
   image_picker: ^1.0.7
   # Vérifiez cette ligne pour vous assurer qu'elle a la bonne indentation et la bonne structure
   flutter:
