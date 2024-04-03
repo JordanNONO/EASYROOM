@@ -44,7 +44,7 @@ app.use("/",require("./routes/index"))
 app.use("/api/v1/user", require("./routes/api/user"));
 app.use("/api/v1/house", require("./routes/api/house"));
 app.use("/api/v1/favorite", require("./routes/api/favorite"));
-
+app.use("/api/v1/reservation",require("./routes/api/reservation"))
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 http.createServer(app).listen(4500, () => {
