@@ -11,18 +11,21 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.User,{
-        foreignKey:"sender_id",
-        onDelete:"CASCADE"
-      })
-      this.belongsTo(models.User,{
-        foreignKey:"receiver_id",
-        onDelete:"CASCADE"
-      })
-      this.belongsTo(models.House,{
-        foreignKey:"house_id",
-        onDelete:"CASCADE"
-      })
+      this.belongsTo(models.User, {
+        foreignKey: "sender_id",
+        as: 'Sender',
+        onDelete: "CASCADE"
+      });
+      this.belongsTo(models.User, {
+        foreignKey: "receiver_id",
+        as: 'Receiver',
+        onDelete: "CASCADE"
+      });
+      this.belongsTo(models.House, {
+        foreignKey: "house_id",
+        as: 'House',
+        onDelete: "CASCADE"
+      });
     }
   }
   Chat.init({

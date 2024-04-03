@@ -1,17 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../../models');
+const { protect } = require('../../auth/auth');
+const { ValidateField } = require('../../middlewares/validation');
 // Récupérer tous les messages d'un chat spécifique
-router.get('/chat/:houseId', async (req, res) => {
+router.get('/:houseId', protect(), async (req, res) => {
   try {
     const { houseId } = req.params;
     
     const chats = await db.Chat.findAll({
-      where: { house_id: houseId },
+      where: { house_id: houseId, },
       include: [
         { model: db.User, as: 'Sender', attributes: ['id', 'name', 'lastname'] },
         { model: db.User, as: 'Receiver', attributes: ['id', 'name', 'lastname'] },
-        { model: db.House, attributes: ['id', 'label', 'location'] }
+        { model: db.House, as:"House", attributes: ['id', 'label', 'location'] }
       ]
     });
 
@@ -24,12 +26,12 @@ router.get('/chat/:houseId', async (req, res) => {
 });
 
 // Ajouter un nouveau message au chat
-router.post('/chat', async (req, res) => {
+router.post('/add',protect(),ValidateField, async (req, res) => {
   try {
-    const { sender_id, receiver_id, message, house_id } = req.body;
+    const { receiver_id, message, house_id } = req.body;
 
     const newChat = await db.Chat.create({
-      sender_id,
+      sender_id:req.user.id,
       receiver_id,
       message,
       house_id,
@@ -45,7 +47,7 @@ router.post('/chat', async (req, res) => {
 });
 
 // Marquer un message comme lu
-router.put('/chat/:chatId/mark-as-read', async (req, res) => {
+router.put('/:chatId/mark-as-read', protect(), async (req, res) => {
   try {
     const { chatId } = req.params;
 
