@@ -29,6 +29,10 @@ module.exports = (sequelize, DataTypes) => {
 				foreignKey: "house_id",
 				onDelete: "CASCADE",
 			});
+			this.hasOne(models.Chat, {
+				foreignKey: "house_id",
+				onDelete: "CASCADE",
+			});
 			this.hasMany(models.House_adventage, {
 				foreignKey: "house_id",
 				onDelete: "CASCADE",
