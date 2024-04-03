@@ -7,7 +7,7 @@ const router = require("express").Router()
 
 router.get("/",protect(),async(req,res)=>{
     try {
-        const reservation = await db.Reservation.findAll({where:{user_id:req.user.id}})
+        const reservation = await db.Reservation.findAll({where:{user_id:req.user.id},include:["User","House"]})
         return res.status(200).json(reservation);
     } catch (error) {
         return res.status(500).send("Internal error")
@@ -30,7 +30,7 @@ router.get("/",protect(),async(req,res)=>{
  *             properties:
  *               house_id:
  *                 type: integer
- *               // Ajoutez d'autres propriétés du corps de la requête si nécessaire
+ *               
  *     responses:
  *       201:
  *         description: Successfully created a new reservation
@@ -69,7 +69,7 @@ router.post("/set", ValidateField, protect(), async (req, res) => {
             }
         });
         if (!getReservation) {
-            await db.Reservation.create({ ...req.body, user_id: req.user.id });
+            await db.Reservation.create({ ...req.body, visite_date:req.body?.date, user_id: req.user.id });
             return res.status(201).json({
                 state: "SUCCESS",
                 message: "Reservation was created"
@@ -84,3 +84,5 @@ router.post("/set", ValidateField, protect(), async (req, res) => {
         return res.status(500).send("Internal error");
     }
 });
+
+module.exports = router
