@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:easyroom/models/ReservationModel.dart';
 import 'package:easyroom/requests/constant.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -7,7 +9,7 @@ const storage = FlutterSecureStorage();
 class ApiService {
 
 
-  static Future<Map<String, dynamic>> setReservation(Map<String, dynamic> data) async {
+  static Future<bool> setReservation(context,Map<String, dynamic> data) async {
     final token = await storage.read(key: 'token');
     final response = await http.post(
       Uri.parse('$BASE_URL/reservation/set'),
@@ -19,11 +21,27 @@ class ApiService {
     );
 
     if (response.statusCode == 201) {
-      return {'success': true, 'message': 'Reservation was created'};
+
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.greenAccent,
+          content: Text("Reservation a été bien créé"),
+        ),
+      );
+      return true;
     } else if (response.statusCode == 400) {
-      return {'success': false, 'message': 'Reservation already exists'};
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.redAccent,
+          content: Text("Reservation existe"),
+        ),
+      );
+      return false;
     } else {
       throw Exception('Failed to set reservation');
+
     }
   }
   static Future<bool> registerRequest(String contact,String name,String lastname, String password) async {
@@ -68,6 +86,18 @@ class ApiService {
     }catch(error){
       print(error);
       return false;
+    }
+  }
+  Future<List<ReservationModel>> fetchReservations() async {
+    final url = "$BASE_URL/reservation"; // Replace with your API endpoint
+
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = json.decode(response.body);
+      return jsonResponse.map((data) => ReservationModel.fromJson(data)).toList();
+    } else {
+      throw Exception('Failed to load reservations from API');
     }
   }
 }
