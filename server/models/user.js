@@ -29,6 +29,14 @@ module.exports = (sequelize, DataTypes) => {
 				foreignKey: "user_id",
 				onDelete: "CASCADE",
 			});
+			this.hasMany(models.Chat, {
+				foreignKey: "sender_id",
+				onDelete: "CASCADE",
+			});
+			this.hasMany(models.Chat, {
+				foreignKey: "receiver_id",
+				onDelete: "CASCADE",
+			});
 			this.hasMany(models.Payement, {
 				foreignKey: "user_id",
 				onDelete: "CASCADE",
