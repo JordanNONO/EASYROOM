@@ -118,4 +118,18 @@ class ApiService {
       throw Exception('Failed to load reservations from API');
     }
   }
+  static Future<bool> setFavorite(int houseId) async {
+    final url = "$BASE_URL/favorite/set/$houseId"; // Replace with your API endpoint
+    final token = await storage.read(key: 'token');
+    final response = await http.post(Uri.parse(url), headers: {
+      'Authorization': 'Bearer $token',
+    },);
+    if (response.statusCode == 200) {
+
+      return true;
+    } else {
+      print('Failed to load favorite from API');
+      return false;
+    }
+  }
 }

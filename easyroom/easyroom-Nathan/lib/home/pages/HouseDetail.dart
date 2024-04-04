@@ -1,4 +1,6 @@
+import 'package:easyroom/home/pages/House.dart';
 import 'package:easyroom/home/pages/addReservation.dart';
+import 'package:easyroom/requests/ApiService.dart';
 import 'package:flutter/material.dart';
 import 'package:easyroom/models/House.dart';
 import 'package:easyroom/requests/constant.dart';
@@ -13,6 +15,7 @@ void _showAddReservationModal(BuildContext context, House house) {
     },
   );
 }
+
 
 class HomeRentDetailPage extends StatelessWidget {
   final House house;
@@ -51,9 +54,18 @@ class HomeRentDetailPage extends StatelessWidget {
                 children: [
                   Text(house.label, style: Theme.of(context).textTheme.headline6),
                   IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.favorite_border_outlined, color: Colors.red, size: 40),
+                    onPressed: () {
+                      ApiService.setFavorite(house.id);
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (BuildContext context) => HousePage(user: user,),
+                        ),
+                      );
+
+                    },
+                    icon: house.isFavorite? const Icon(Icons.favorite,color: Colors.red, size: 40) : const Icon(Icons.favorite_border_outlined, color: Colors.red, size: 40),
                   ),
+
                 ],
               ),
               const SizedBox(height: 8.0),
