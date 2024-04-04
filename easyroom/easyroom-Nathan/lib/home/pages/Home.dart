@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:easyroom/Screens/Login/login_screen.dart';
 import 'package:easyroom/home/pages/HouseDetail.dart';
 import 'package:easyroom/models/House.dart';
+import 'package:easyroom/models/Recommandation.dart';
 import 'package:easyroom/models/User.dart';
 import 'package:easyroom/requests/constant.dart';
 import 'package:flutter/material.dart';
@@ -45,11 +46,11 @@ class _MainHomePage extends State<MainHomePage> {
     return null;
   }
 
-  Future<List<House>?> _fetchHouse() async {
+  Future<List<HouseRecommanded>?> _fetchHouse() async {
     final token = await storage.read(key: 'token');
 
     final response = await http.get(
-      Uri.parse('$BASE_URL/house'),
+      Uri.parse('$BASE_URL/house/recommanded'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -58,8 +59,8 @@ class _MainHomePage extends State<MainHomePage> {
 
     if (response.statusCode == 200) {
       final List<dynamic> houseDataList = json.decode(response.body);
-      final List<House> houses =
-          houseDataList.map((houseData) => House.fromJson(houseData)).toList();
+      final List<HouseRecommanded> houses =
+          houseDataList.map((houseData) => HouseRecommanded.fromJson(houseData)).toList();
       //print(houses);
       return houses;
     } else {

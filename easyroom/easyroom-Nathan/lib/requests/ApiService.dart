@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:easyroom/models/Gender.dart';
 import 'package:easyroom/models/ReservationModel.dart';
 import 'package:easyroom/requests/constant.dart';
 import 'package:flutter/material.dart';
@@ -130,6 +131,22 @@ class ApiService {
     } else {
       print('Failed to load favorite from API');
       return false;
+    }
+  }
+  static Future<List<Gender>> fetchGenders() async {
+    final url = "$BASE_URL/user/gender";
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      // Convertir la réponse JSON en une liste d'objets Gender
+      List<dynamic> jsonResponse = json.decode(response.body);
+      print(response.body);
+      List<Gender> genders = jsonResponse.map((data) => Gender.fromJson(data)).toList();
+
+      return genders;
+    } else {
+      print('Failed to load genders from API');
+      throw Exception('Failed to load genders from API');
     }
   }
 }

@@ -1,4 +1,4 @@
-import 'package:easyroom/home/pages/House.dart';
+import 'package:easyroom/home/index.dart';
 import 'package:easyroom/home/pages/addReservation.dart';
 import 'package:easyroom/requests/ApiService.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +18,7 @@ void _showAddReservationModal(BuildContext context, House house) {
 
 
 class HomeRentDetailPage extends StatelessWidget {
-  final House house;
+  final dynamic house;
   final User? user;
 
   const HomeRentDetailPage({super.key, required this.house, this.user});
@@ -58,7 +58,7 @@ class HomeRentDetailPage extends StatelessWidget {
                       ApiService.setFavorite(house.id);
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                          builder: (BuildContext context) => HousePage(user: user,),
+                          builder: (BuildContext context) => const HomePage(),
                         ),
                       );
 
