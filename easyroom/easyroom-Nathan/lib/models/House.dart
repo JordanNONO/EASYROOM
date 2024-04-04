@@ -16,10 +16,12 @@ class House {
   final DateTime createdAt;
   final DateTime updatedAt;
   final User user;
+  final bool isFavorite;
   final List<HouseImage> images;
   // Vous pouvez également ajouter une liste pour 'options' si nécessaire
 
-  House({
+  House( {
+    required this.isFavorite,
     required this.id,
     required this.label,
     required this.location,
@@ -42,6 +44,7 @@ class House {
     List<dynamic> imagesJson = json['images'] ?? [];
     return House(
       id: json['id'],
+      isFavorite: json["favorite"],
       label: json['label'],
       location: json['location'],
       mapLocation: json['map_location'],
