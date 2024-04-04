@@ -246,4 +246,14 @@ router.get("/me/rdv", protect(), async (req, res) => {
     }
 });
 
+router.get("/gender",async(req,res)=>{
+	try {
+		const genders = await db.Gender.findAll({raw:true})
+	    return res.status(200).json(genders)
+	} catch (error) {
+		console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+	}
+})
+
 module.exports = router;

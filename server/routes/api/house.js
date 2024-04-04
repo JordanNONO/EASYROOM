@@ -6,6 +6,7 @@ const {
 	ValidateField,
 	ValidateParams,
 } = require("../../middlewares/validation");
+const { Sequelize } = require("sequelize");
 
 // Configuration de Multer pour l'upload de fichiers
 var storage = multer.diskStorage({
@@ -43,14 +44,51 @@ const upload = multer({
  *         description: Successfully retrieved recommended houses
  */
 
-router.get("/recommanded",protect(),async(req,res)=>{
-	try {
-		const favorites = await db.Favorite.findAll({raw:true});
-		// TODO: Implement logic to get recommended houses based on favorites
-	} catch (error) {
-		console.log(error);
-		return res.status(500).send("Internal error");
-	}
+router.get("/recommanded", protect(), async (req, res) => {
+    try {
+        const Houses = [];
+
+        const popularHouses = await db.House.findAll({
+            include: ['User'], 
+            attributes: {
+                include: [
+                    [
+                        Sequelize.literal(`(
+                            SELECT COUNT(*)
+                            FROM Favorites
+                            WHERE Favorites.house_id = House.id
+                        )`),
+                        'favorites_count'
+                    ]
+                ]
+            },
+            order: [[Sequelize.literal('favorites_count'), 'DESC']],
+            limit: 5 
+        });
+
+        for (const house of popularHouses) {
+            const images = await db.House_images.findAll({ where: { house_id: house.id }, raw: true }) ?? [];
+            const options = await db.House_option.findAll({ where: { house_id: house.id }, raw: true }) ?? [];
+
+            // Check if Favorite is not null
+            const isFavorite = await db.Favorite.findOne({ where: { house_id: house.id } }) !== null;
+
+            Houses.push({
+                ...house.dataValues,
+                has_bathroom: house.has_bathroom === 1,
+                has_kitchen: house.has_kitchen === 1,
+                is_rent: house.is_rent === 1,
+                images,
+                options,
+                favorite: isFavorite,
+            });
+        }
+
+        return res.status(200).json(Houses);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
 });
 
 /**
