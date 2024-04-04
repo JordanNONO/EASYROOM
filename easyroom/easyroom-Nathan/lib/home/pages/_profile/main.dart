@@ -103,7 +103,7 @@ class _ProfileMainState extends State<ProfileMain> {
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return const ProfileEditPage();
+                              return ProfileEditPage(userData: user,);
                             },
                           ),
                         );
