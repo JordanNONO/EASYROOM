@@ -14,7 +14,7 @@ router.get("/", protect(), async (req, res) => {
 		return res.status(500).send("Internal error");
 	}
 });
-router.post("/set/:house_id", protect(), ValidateParams, async (req, res) => {
+router.post("/set/:house_id", protect(), async (req, res) => {
 	try {
 		const { house_id } = req.params;
 		const getHouse = await db.House.findOne({ where: { id: house_id } });
@@ -38,6 +38,8 @@ router.post("/set/:house_id", protect(), ValidateParams, async (req, res) => {
 				.status(200)
 				.json({ state: "SUCCESS", message: "Favorite set" });
 		}
-	} catch (error) {}
+	} catch (error) {
+		return res.status(500).send("internal error")
+	}
 });
 module.exports = router

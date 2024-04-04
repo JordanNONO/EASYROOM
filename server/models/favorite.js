@@ -13,6 +13,11 @@ module.exports = (sequelize, DataTypes) => {
 				foreignKey: "user_id",
 				onDelete: "CASCADE",
 			});
+			
+			this.belongsTo(models.House,{
+				foreignKey:"house_id",
+				onDelete:"CASCADE"
+			})
 		}
 	}
 	Favorite.init(
