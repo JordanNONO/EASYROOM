@@ -3,17 +3,18 @@ const router = express.Router();
 const db = require('../../models');
 const { protect } = require('../../auth/auth');
 const { ValidateField } = require('../../middlewares/validation');
+const { Op } = require('sequelize');
 // Récupérer tous les messages d'un chat spécifique
 router.get('/:houseId', protect(), async (req, res) => {
   try {
     const { houseId } = req.params;
     
     const chats = await db.Chat.findAll({
-      where: { house_id: houseId, },
+      where: { [Op.and]:[{house_id: houseId},{[Op.or]:[{sender_id:req.user.id},{receiver_id:req.user.id}]}] },
       include: [
-        { model: db.User, as: 'Sender', attributes: ['id', 'name', 'lastname'] },
-        { model: db.User, as: 'Receiver', attributes: ['id', 'name', 'lastname'] },
-        { model: db.House, as:"House", attributes: ['id', 'label', 'location'] }
+        { model: db.User, as: 'Sender',  },
+        { model: db.User, as: 'Receiver', },
+        { model: db.House, as:"House", }
       ]
     });
 
