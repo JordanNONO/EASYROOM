@@ -120,7 +120,7 @@ class _ProfilePage extends State<ProfilePage> {
                   return TabBarView(
                     children: [
                       const ProfileMain(),
-                      const ReservationList(),
+                      ReservationList(user: user,),
                       const AddHousePage(),
                       MyHouseListPage(user:user),
                     ],

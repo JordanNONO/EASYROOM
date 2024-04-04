@@ -88,14 +88,32 @@ class ApiService {
       return false;
     }
   }
-  Future<List<ReservationModel>> fetchReservations() async {
+  static Future<List<ReservationModel>> fetchReservations() async {
     final url = "$BASE_URL/reservation"; // Replace with your API endpoint
-
-    final response = await http.get(Uri.parse(url));
+    final token = await storage.read(key: 'token');
+    final response = await http.get(Uri.parse(url), headers: {
+    'Authorization': 'Bearer $token',
+    },);
 
     if (response.statusCode == 200) {
       List<dynamic> jsonResponse = json.decode(response.body);
-      return jsonResponse.map((data) => ReservationModel.fromJson(data)).toList();
+      List<ReservationModel> reservations =  jsonResponse.map((data) => ReservationModel.fromJson(data)).toList();
+      return reservations;
+    } else {
+      throw Exception('Failed to load reservations from API');
+    }
+  }
+  static Future<List<ReservationModel>> fetchMyReservations() async {
+    final url = "$BASE_URL/user/me/rdv"; // Replace with your API endpoint
+    final token = await storage.read(key: 'token');
+    final response = await http.get(Uri.parse(url), headers: {
+      'Authorization': 'Bearer $token',
+    },);
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = json.decode(response.body);
+      List<ReservationModel> reservations =  jsonResponse.map((data) => ReservationModel.fromJson(data)).toList();
+      return reservations;
     } else {
       throw Exception('Failed to load reservations from API');
     }
