@@ -76,7 +76,7 @@ class _AddHousePageState extends State<AddHousePage> {
     if (response.statusCode == 201) {
       // Traitement après succès de l'envoi des données
       Navigator.pop(context);
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePage()));
+      //Navigator.push(context, MaterialPageRoute(builder: (context)=>const HomePage()));
       print('House added successfully');
     } else {
       // Traitement en cas d'erreur

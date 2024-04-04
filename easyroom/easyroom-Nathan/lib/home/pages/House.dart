@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:easyroom/home/pages/HouseDetail.dart';
 import 'package:easyroom/models/House.dart';
+import 'package:easyroom/models/User.dart';
 import 'package:easyroom/requests/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -9,8 +10,11 @@ import 'package:http/http.dart' as http;
 
 const storage = FlutterSecureStorage();
 
+
+
 class HousePage extends StatefulWidget {
-  const HousePage({super.key});
+  final User? user;
+  const HousePage({super.key, this.user});
 
   @override
   State<StatefulWidget> createState() => _HousePage();
@@ -40,6 +44,8 @@ class _HousePage extends State<HousePage> {
     }
     return null;
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +116,7 @@ class _HousePage extends State<HousePage> {
                                   Navigator.push(context, MaterialPageRoute(
                                     builder: (context) {
                                       return HomeRentDetailPage(
-                                          house: house[index]);
+                                          house: house[index],user: widget.user,);
                                     },
                                   ));
                                 },

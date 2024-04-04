@@ -12,7 +12,8 @@ import 'package:http/http.dart' as http;
 const storage = FlutterSecureStorage();
 
 class MainHomePage extends StatefulWidget {
-  const MainHomePage({super.key});
+  final User? user;
+  const MainHomePage({super.key, this.user});
 
   @override
   State<StatefulWidget> createState() => _MainHomePage();
@@ -178,7 +179,7 @@ class _MainHomePage extends State<MainHomePage> {
                                   fit: BoxFit.cover,),
                                 onTap: (){
                                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                    return  HomeRentDetailPage(house:house[index]);
+                                    return  HomeRentDetailPage(house:house[index],user: widget.user,);
                                   },));
                                 },
                                 subtitle: Text(
@@ -194,7 +195,7 @@ class _MainHomePage extends State<MainHomePage> {
                       }
                     }
                     return const Center(
-                      child: Image(image: AssetImage("images/warning.png")),
+                      child: Image(image: AssetImage("assets/images/warning.png")),
                     ) ;
                   })
               )
