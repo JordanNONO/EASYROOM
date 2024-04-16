@@ -4,7 +4,6 @@ import 'package:easyroom/requests/ApiService.dart';
 import 'package:flutter/material.dart';
 import 'package:easyroom/models/House.dart';
 import 'package:easyroom/requests/constant.dart';
-
 import '../../models/User.dart';
 
 void _showAddReservationModal(BuildContext context, House house) {
@@ -16,18 +15,16 @@ void _showAddReservationModal(BuildContext context, House house) {
   );
 }
 
-
 class HomeRentDetailPage extends StatelessWidget {
   final dynamic house;
   final User? user;
 
-  const HomeRentDetailPage({super.key, required this.house, this.user});
+  const HomeRentDetailPage({Key? key, required this.house, this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -65,7 +62,6 @@ class HomeRentDetailPage extends StatelessWidget {
                     },
                     icon: house.isFavorite? const Icon(Icons.favorite,color: Colors.red, size: 40) : const Icon(Icons.favorite_border_outlined, color: Colors.red, size: 40),
                   ),
-
                 ],
               ),
               const SizedBox(height: 8.0),
@@ -124,20 +120,35 @@ class HomeRentDetailPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16.0),
-             if(user?.id == house.user.id)
-                 ElevatedButton(onPressed: (){
-
-                 },style: const ButtonStyle(
-                     backgroundColor: MaterialStatePropertyAll(Colors.amber)
-                 ), child: const Text("Modifier"),)
-
-              else ElevatedButton(
-               onPressed: () {
-                 // Action à effectuer lorsque le bouton est pressé
-                 _showAddReservationModal(context,house);
-               },
-               child: const Text('Reserver dès maintenant'),
-             ),
+              if(user?.id == house.user.id)
+                ElevatedButton(
+                  onPressed: () {
+                    // Action à effectuer lorsque le bouton est pressé
+                    // Ajouter l'action de modification ici
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blueAccent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
+                  child: const Text("Modifier"),
+                )
+              else
+                ElevatedButton(
+                  onPressed: () {
+                    // Action à effectuer lorsque le bouton est pressé
+                    _showAddReservationModal(context,house);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                  ),
+                  child: const Text('Réserver dès maintenant'),
+                ),
             ],
           ),
         ),

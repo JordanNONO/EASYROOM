@@ -1,17 +1,17 @@
-
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:easyroom/Screens/Login/login_screen.dart';
 import 'package:easyroom/home/pages/profileEdit.dart';
 import 'package:easyroom/models/User.dart';
-import 'package:easyroom/models/House.dart'; // Import du modèle House
+import 'package:easyroom/models/House.dart';
 import 'package:easyroom/requests/constant.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 const storage = FlutterSecureStorage();
+
 class ProfileMain extends StatefulWidget {
-  const ProfileMain({super.key}) ;
+  const ProfileMain({Key? key});
 
   @override
   State<ProfileMain> createState() => _ProfileMainState();
@@ -67,7 +67,12 @@ class _ProfileMainState extends State<ProfileMain> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Mon Profil'),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: FutureBuilder(
           future: Future.wait([_fetchUser(), _fetchRecentHouses()]),
           builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
@@ -81,8 +86,7 @@ class _ProfileMainState extends State<ProfileMain> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 20),
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 50,
                       backgroundImage: AssetImage('assets/images/default.png'),
                     ),
@@ -92,44 +96,24 @@ class _ProfileMainState extends State<ProfileMain> {
                       style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
-                    const Text(
-                      '',
-                      style: TextStyle(fontSize: 18, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return ProfileEditPage(userData: user,);
+                              return ProfileEditPage(userData: user);
                             },
                           ),
                         );
                       },
-                      child: const Text('Edit Profile'),
+                      child: const Text('Modifier le Profil'),
                     ),
                     const SizedBox(height: 20),
-                   /* if (user.renHouse != null)
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return const AddHousePage();
-                              },
-                            ),
-                          );
-                        },
-                        child: const Text('Ajouter une maison'),
-                      ),*/
-                    const SizedBox(height: 20),
-                    const ListTile(
-                      leading: Icon(Icons.email),
-                      title: Text('Email'),
-                      subtitle: Text('johndoe@example.com'),
+                    ListTile(
+                      leading: const Icon(Icons.email),
+                      title: const Text('Email'),
+                      subtitle: Text(user.email),
                     ),
                     ListTile(
                       leading: const Icon(Icons.phone),
@@ -137,35 +121,33 @@ class _ProfileMainState extends State<ProfileMain> {
                       subtitle: Text(user.contact),
                     ),
                     const SizedBox(height: 20),
-                    // Statistiques de l'utilisateur
                     const Text(
                       'Statistiques',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'Nombre de maisons publiées: ${gethouses!.length}', // Remplacer par la vraie statistique
+                      'Nombre de maisons publiées: ${gethouses!.length}',
                       style: const TextStyle(fontSize: 18),
                     ),
                     const SizedBox(height: 20),
-                    // Dernières maisons publiées
-
+                    const Text(
+                      'Dernières maisons publiées',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
                     const SizedBox(height: 10),
-                    /*ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: recentHouses.length,
-                      itemBuilder: (context, index) {
-                        final house = recentHouses[index];
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage: NetworkImage('${BASE_URL}/${house.images.first.image}'),
-                          ),
-                          title: Text(house.label),
-                          subtitle: Text(house.location),
-                        );
-                      },
-                    ),*/
+                    if (recentHouses != null && recentHouses.isNotEmpty)
+                      Column(
+                        children: recentHouses.map<Widget>((house) {
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage: NetworkImage('${BASE_URL}/${house.images.first.image}'),
+                            ),
+                            title: Text(house.label),
+                            subtitle: Text(house.location),
+                          );
+                        }).toList(),
+                      ),
                   ],
                 );
               } else if (snapshot.hasError) {

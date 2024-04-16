@@ -1,17 +1,19 @@
 import 'dart:convert';
-import 'dart:async';  // Import Timer
+import 'dart:async';
 import 'package:easyroom/models/ReservationModel.dart';
 import 'package:easyroom/requests/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:easyroom/models/User.dart';
+
 const storage = FlutterSecureStorage();
 
 class ChatScreen extends StatefulWidget {
   final ReservationModel rdv;
   final User user;
-  const ChatScreen({super.key, required this.rdv, required this.user});
+
+  const ChatScreen({Key? key, required this.rdv, required this.user}) : super(key: key);
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -21,20 +23,20 @@ class _ChatScreenState extends State<ChatScreen> {
   final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = TextEditingController();
   final String apiUrl = "$BASE_URL/chat";
-  late Timer _timer;  // Declare Timer
+  late Timer _timer;
 
   @override
   void initState() {
     super.initState();
     _fetchMessages();
-    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {  // Start Timer
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       _fetchMessages();
     });
   }
 
   @override
   void dispose() {
-    _timer.cancel();  // Cancel Timer when disposing the screen
+    _timer.cancel();
     super.dispose();
   }
 
@@ -57,7 +59,7 @@ class _ChatScreenState extends State<ChatScreen> {
       )).toList();
 
       setState(() {
-        _messages.clear();  // Clear previous messages
+        _messages.clear();
         _messages.addAll(messages);
       });
     } else {
@@ -101,14 +103,21 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildTextComposer() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8.0),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(24.0),
+      ),
       child: Row(
         children: <Widget>[
           Expanded(
-            child: TextField(
-              controller: _textController,
-              onSubmitted: _handleSubmitted,
-              decoration: const InputDecoration.collapsed(
-                hintText: "Commencer une discussion",
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: TextField(
+                controller: _textController,
+                onSubmitted: _handleSubmitted,
+                decoration: const InputDecoration.collapsed(
+                  hintText: "Commencer une discussion",
+                ),
               ),
             ),
           ),
@@ -129,12 +138,15 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Column(
         children: <Widget>[
-          Flexible(
+          Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(8.0),
               reverse: true,
               itemCount: _messages.length,
-              itemBuilder: (_, int index) => _messages[index],
+              itemBuilder: (_, int index) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: _messages[index],
+              ),
             ),
           ),
           const Divider(height: 1.0),
@@ -156,43 +168,32 @@ class ChatMessage extends StatelessWidget {
   final dynamic receiver;
   final User connectedUser;
 
-  const ChatMessage({super.key, required this.text, required this.sender, required this.receiver, required this.connectedUser});
+  const ChatMessage({Key? key, required this.text, required this.sender, required this.receiver, required this.connectedUser}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    bool isSender = sender.id == connectedUser.id;  // Check if sender is the connected user
+    bool isSender = sender.id == connectedUser.id;
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Row(
-        mainAxisAlignment: isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
+      margin: EdgeInsets.only(
+        left: isSender ? 64.0 : 8.0,
+        right: isSender ? 8.0 : 64.0,
+        top: 4.0,
+        bottom: 4.0,
+      ),
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        color: isSender ? Colors.blue[100] : Colors.grey[200],
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          if (!isSender)  // Display avatar only for receiver
-            Container(
-              margin: const EdgeInsets.only(right: 16.0),
-              child: CircleAvatar(child: Text(sender.name[0])),
-            ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: isSender ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(sender.name, style: Theme.of(context).textTheme.subtitle1),
-                Container(
-                  margin: const EdgeInsets.only(top: 5.0),
-                  child: Text(text),
-                ),
-              ],
-            ),
-          ),
-          if (isSender)  // Display avatar only for sender
-            Container(
-              margin: const EdgeInsets.only(left: 16.0),
-              child: CircleAvatar(child: Text(sender.name[0])),
-            ),
+          Text(sender.name, style: TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4.0),
+          Text(text),
         ],
       ),
     );
   }
 }
-

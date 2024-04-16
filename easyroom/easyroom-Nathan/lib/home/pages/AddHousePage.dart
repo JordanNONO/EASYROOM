@@ -10,7 +10,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 const storage = FlutterSecureStorage();
 
 class AddHousePage extends StatefulWidget {
-  const AddHousePage({super.key});
+  const AddHousePage({Key? key});
   @override
   _AddHousePageState createState() => _AddHousePageState();
 }
@@ -41,13 +41,12 @@ class _AddHousePageState extends State<AddHousePage> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return const Center(
-          child: CircularProgressIndicator(color: Colors.blue,), // Display the CircularProgressIndicator
+          child: CircularProgressIndicator(color: Colors.blue,),
         );
       },
     );
     final token = await storage.read(key: 'token');
-    final uri = Uri.parse(
-        '$BASE_URL/house/add'); // Remplacez par l'URL de votre endpoint
+    final uri = Uri.parse('$BASE_URL/house/add');
     final request = http.MultipartRequest('POST', uri)
       ..fields['title'] = _labelController.text
       ..fields['location'] = _locationController.text
@@ -73,122 +72,81 @@ class _AddHousePageState extends State<AddHousePage> {
 
     final response = await http.Response.fromStream(await request.send());
     if (response.statusCode == 201) {
-      // Traitement après succès de l'envoi des données
       Navigator.pop(context);
-      //Navigator.push(context, MaterialPageRoute(builder: (context)=>const HomePage()));
       print('House added successfully');
     } else {
-      // Traitement en cas d'erreur
       print('Failed to add house');
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     
+      appBar: AppBar(
+        title: const Text('Ajouter une maison'),
+      ),
       body: SingleChildScrollView(
-          child: Form(
-              child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              child: ElevatedButton(
-                onPressed: getImage,
-
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(Icons.image_outlined),
-                    Text("Selectionner les photos")
-                  ],
-                ),
-              ) ,
+            ElevatedButton.icon(
+              onPressed: getImage,
+              icon: const Icon(Icons.image_outlined),
+              label: const Text("Sélectionner des photos"),
             ),
-            const SizedBox(height: 18,),
+            const SizedBox(height: 18),
             TextFormField(
               controller: _labelController,
               keyboardType: TextInputType.text,
-              textInputAction: TextInputAction.next,
-              cursorColor: kPrimaryColor,
-              onSaved: (email) {},
-              decoration: const InputDecoration(
-                hintText: "Un titre",
-                prefixIcon: Padding(
-                  padding: EdgeInsets.all(defaultPadding),
-                  child: Icon(Icons.house),
-                ),
+              decoration: InputDecoration(
+                labelText: "Titre",
+                prefixIcon: const Icon(Icons.house),
               ),
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
-                  return 'Le contact est requis';
+                  return 'Le titre est requis';
                 }
                 return null;
               },
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             TextFormField(
               controller: _priceController,
               keyboardType: TextInputType.number,
-              textInputAction: TextInputAction.next,
-              cursorColor: kPrimaryColor,
-              onSaved: (email) {},
-              decoration: const InputDecoration(
-                hintText: "Le montant",
-                prefixIcon: Padding(
-                  padding: EdgeInsets.all(defaultPadding),
-                  child: Icon(Icons.price_change),
-                ),
+              decoration: InputDecoration(
+                labelText: "Prix",
+                prefixIcon: const Icon(Icons.price_change),
               ),
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
-                  return 'Le montant est requis';
+                  return 'Le prix est requis';
                 }
                 return null;
               },
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(height: 10),
             TextFormField(
               controller: _bedroomsController,
               keyboardType: TextInputType.number,
-              textInputAction: TextInputAction.next,
-              cursorColor: kPrimaryColor,
-              onSaved: (email) {},
-              decoration: const InputDecoration(
-                hintText: "Nombre de chambre",
-                prefixIcon: Padding(
-                  padding: EdgeInsets.all(defaultPadding),
-                  child: Icon(Icons.bed),
-                ),
+              decoration: InputDecoration(
+                labelText: "Nombre de chambres",
+                prefixIcon: const Icon(Icons.bed),
               ),
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
-                  return 'Le nombre est requis';
+                  return 'Le nombre de chambres est requis';
                 }
                 return null;
               },
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             TextFormField(
               controller: _locationController,
               keyboardType: TextInputType.text,
-              textInputAction: TextInputAction.next,
-              cursorColor: kPrimaryColor,
-              onSaved: (email) {},
-              decoration: const InputDecoration(
-                hintText: "Indiquer l'emplacement",
-                prefixIcon: Padding(
-                  padding: EdgeInsets.all(defaultPadding),
-                  child: Icon(Icons.location_pin),
-                ),
+              decoration: InputDecoration(
+                labelText: "Emplacement",
+                prefixIcon: const Icon(Icons.location_pin),
               ),
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
@@ -197,71 +155,66 @@ class _AddHousePageState extends State<AddHousePage> {
                 return null;
               },
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             TextFormField(
               controller: _descriptionController,
-              keyboardType: TextInputType.text,
-              textInputAction: TextInputAction.next,
-              cursorColor: kPrimaryColor,
-              onSaved: (email) {},
-              decoration: const InputDecoration(
-                hintText: "Une description",
-                /*prefixIcon: Padding(
-                  padding: EdgeInsets.all(defaultPadding),
-                  child: Icon(Icons.price_change),
-                ),*/
-              ),
+              keyboardType: TextInputType.multiline,
               maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: "Description",
+              ),
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
-                  return 'Le montant est requis';
+                  return 'La description est requise';
                 }
                 return null;
               },
             ),
-            const SizedBox(
-              height: 10,
-            ),
-           Row(
-             children: [
-               const Text("Cuisine ? "),
-               Switch(
-                   activeColor: Colors.blue,
-                   inactiveThumbColor: Colors.blue,
-                   value: _kitchen,
-                   onChanged: (bool value) {
-                     setState(() {
-                       _kitchen = value;
-                     });
-                   })
-             ],
-           ),
+            const SizedBox(height: 10),
             Row(
               children: [
-                const Text("Wc+douche ? "),
+                const Text("Cuisine"),
                 Switch(
-                    activeColor: Colors.blue,
-                    inactiveThumbColor: Colors.blue,
-                    value: _bathrooms,
-                    onChanged: (bool value) {
-                      setState(() {
-                        _bathrooms = value;
-                      });
-                    })
+                  value: _kitchen,
+                  onChanged: (bool value) {
+                    setState(() {
+                      _kitchen = value;
+                    });
+                  },
+                ),
               ],
             ),
-            const SizedBox(height: 10,),
+            Row(
+              children: [
+                const Text("WC + Douche"),
+                Switch(
+                  value: _bathrooms,
+                  onChanged: (bool value) {
+                    setState(() {
+                      _bathrooms = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
             SizedBox(
+              width: double.infinity,
               child: ElevatedButton(
                 onPressed: uploadHouse,
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                ),
                 child: const Text("Ajouter"),
               ),
-            )
+            ),
           ],
         ),
-      ))),
+      ),
     );
   }
 }

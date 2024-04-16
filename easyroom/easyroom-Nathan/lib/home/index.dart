@@ -21,34 +21,34 @@ class HomePage extends StatefulWidget{
 }
 
 class _HomePage extends State<HomePage>{
-    int currentPageIndex = 0;
-    Future<User?> _fetchUser() async {
-      final token = await storage.read(key: 'token');
+  int currentPageIndex = 0;
+  Future<User?> _fetchUser() async {
+    final token = await storage.read(key: 'token');
 
-      final response = await http.get(
-        Uri.parse('$BASE_URL/user/me'),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
-      //print(response.statusCode);
+    final response = await http.get(
+      Uri.parse('$BASE_URL/user/me'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    //print(response.statusCode);
 
-      if (response.statusCode == 200) {
-        final dynamic clientData = json.decode(response.body);
-        final client = User.fromJson(clientData as Map<String, dynamic>);
-        //print(clientData);
-        return client;
-      } else {
-        // Handle HTTP error here
-        print('HTTP Error: ${response.statusCode}');
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>const LoginScreen()));
-      }
-      return null;
+    if (response.statusCode == 200) {
+      final dynamic clientData = json.decode(response.body);
+      final client = User.fromJson(clientData as Map<String, dynamic>);
+      //print(clientData);
+      return client;
+    } else {
+      // Handle HTTP error here
+      print('HTTP Error: ${response.statusCode}');
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>const LoginScreen()));
     }
-    @override
-     Widget build(BuildContext context) {
-      final ThemeData theme = Theme.of(context);
-      return Scaffold(
+    return null;
+  }
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    return Scaffold(
 
         bottomNavigationBar: NavigationBar(
           onDestinationSelected: (int index) {
@@ -101,7 +101,7 @@ class _HomePage extends State<HomePage>{
             child: Image(image: AssetImage("images/warning.png")),
           );
         })
-      );
-    }
+    );
+  }
 
 }
