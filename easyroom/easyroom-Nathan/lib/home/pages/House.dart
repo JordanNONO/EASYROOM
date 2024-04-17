@@ -43,7 +43,8 @@ class _HousePageState extends State<HousePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Maisons'),
+        automaticallyImplyLeading: false,
+        title: const Text('Maisons'),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -55,7 +56,7 @@ class _HousePageState extends State<HousePage> {
               child: TextField(
                 decoration: InputDecoration(
                   hintText: 'Rechercher une maison...',
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.search),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -67,14 +68,14 @@ class _HousePageState extends State<HousePage> {
                 future: _fetchHouse(),
                 builder: (context, AsyncSnapshot<List<House>?> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
+                    return const Center(
                       child: CircularProgressIndicator(color: Colors.blue),
                     );
                   } else if (snapshot.hasError) {
                     return Center(
                       child: Text(
                         "Une erreur s'est produite: ${snapshot.error}",
-                        style: TextStyle(color: Colors.red),
+                        style: const TextStyle(color: Colors.red),
                       ),
                     );
                   } else if (snapshot.hasData) {
@@ -85,24 +86,32 @@ class _HousePageState extends State<HousePage> {
                         final house = houseList[index];
                         return Card(
                           elevation: 4,
-                          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           child: ListTile(
                             title: Text(house.label),
-                            leading: Image.network(
+                            leading:Image.network(
                               "${API_URL}/${house.images.first.image}",
                               width: 80,
                               height: 80,
                               fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
+                                  'assets/images/warning.png', // Image de remplacement
+                                  width: 80,
+                                  height: 80,
+                                  fit: BoxFit.cover,
+                                );
+                              },
                             ),
                             subtitle: Text(
                               house.description,
-                              style: TextStyle(color: Colors.grey),
+                              style: const TextStyle(color: Colors.grey),
                             ),
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => HouseDetailPage(
+                                  builder: (context) => HomeRentDetailPage(
                                     house: house,
                                     user: widget.user,
                                   ),
@@ -111,14 +120,14 @@ class _HousePageState extends State<HousePage> {
                             },
                             trailing: Text(
                               "${house.price} F/mois",
-                              style: TextStyle(fontWeight: FontWeight.w700),
+                              style: const TextStyle(fontWeight: FontWeight.w700),
                             ),
                           ),
                         );
                       },
                     );
                   } else {
-                    return Center(child: Text("Aucune donnée disponible"));
+                    return const Center(child: Text("Aucune donnée disponible"));
                   }
                 },
               ),

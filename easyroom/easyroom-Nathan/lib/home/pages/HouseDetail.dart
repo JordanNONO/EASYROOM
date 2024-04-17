@@ -40,9 +40,17 @@ class HomeRentDetailPage extends StatelessWidget {
             children: [
               Image.network(
                 "${API_URL}/${house.images.first.image}",
-                height: 200,
-                width: double.infinity,
+                width: 80,
+                height: 80,
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset(
+                    'assets/images/warning.png', // Image de remplacement
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                  );
+                },
               ),
               const SizedBox(height: 16.0),
               Row(
@@ -109,9 +117,18 @@ class HomeRentDetailPage extends StatelessWidget {
                     return Row(
                       children: [
                         Image.network(
-                          "${API_URL}/${house.images[index].image}",
-                          height: 200,
+                          "${API_URL}/${house.images.first.image}",
+                          width: 80,
+                          height: 80,
                           fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              'assets/images/warning.png', // Image de remplacement
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.cover,
+                            );
+                          },
                         ),
                         const SizedBox(width: 30),
                       ],
@@ -127,7 +144,7 @@ class HomeRentDetailPage extends StatelessWidget {
                     // Ajouter l'action de modification ici
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.blueAccent,
+                    backgroundColor: Colors.blueAccent,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -141,11 +158,11 @@ class HomeRentDetailPage extends StatelessWidget {
                     _showAddReservationModal(context,house);
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.blue,
+                    backgroundColor: Colors.blue,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
                   ),
                   child: const Text('Réserver dès maintenant'),
                 ),

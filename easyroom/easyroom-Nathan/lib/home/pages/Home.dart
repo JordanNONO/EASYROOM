@@ -176,8 +176,20 @@ class _MainHomePage extends State<MainHomePage> {
                             itemBuilder: (context, index) {
                               return ListTile(
                                 title: Text(house[index].label),
-                                leading: Image.network("${API_URL}/${house[index].images.first.image}",height: 300, width: 80,
-                                  fit: BoxFit.cover,),
+                                leading: Image.network(
+                                  "${API_URL}/${house[index].images.first.image}",
+                                  width: 80,
+                                  height: 80,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      'assets/images/warning.png', // Image de remplacement
+                                      width: 80,
+                                      height: 80,
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
+                                ),
                                 onTap: (){
                                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                                     return  HomeRentDetailPage(house:house[index],user: widget.user,);

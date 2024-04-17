@@ -85,11 +85,11 @@ class _MyHouseListPage extends State<MyHouseListPage> {
                               children: [
                                 Text(
                                   houses[index].label,
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                 ),
                                 Text(
                                   '${houses[index].price} F/mois',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.blue),
+                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.blue),
                                 ),
                               ],
                             ),
@@ -98,26 +98,34 @@ class _MyHouseListPage extends State<MyHouseListPage> {
                               borderRadius: BorderRadius.circular(8),
                               child: Image.network(
                                 "${API_URL}/${houses[index].images.first.image}",
-                                width: MediaQuery.of(context).size.width - 32,
-                                height: 150,
+                                width: 80,
+                                height: 80,
                                 fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                    'assets/images/warning.png', // Image de remplacement
+                                    width: 80,
+                                    height: 80,
+                                    fit: BoxFit.cover,
+                                  );
+                                },
                               ),
                             ),
                             const SizedBox(height: 8),
                             Row(
                               children: [
-                                Icon(Icons.bedroom_parent_outlined, color: Colors.grey, size: 20),
+                                const Icon(Icons.bedroom_parent_outlined, color: Colors.grey, size: 20),
                                 const SizedBox(width: 4),
                                 Text(
                                   '${houses[index].nbreBedroom} Chambres',
-                                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                                  style: const TextStyle(fontSize: 14, color: Colors.grey),
                                 ),
                                 const SizedBox(width: 16),
-                                Icon(Icons.bathroom_outlined, color: Colors.grey, size: 20),
+                                const Icon(Icons.bathroom_outlined, color: Colors.grey, size: 20),
                                 const SizedBox(width: 4),
                                 Text(
-                                  '${houses[index].hasBathroom ? "1 Salle de bain" : "Aucune Salle de bain"}',
-                                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                                  houses[index].hasBathroom ? "1 Salle de bain" : "Aucune Salle de bain",
+                                  style: const TextStyle(fontSize: 14, color: Colors.grey),
                                 ),
                               ],
                             ),
@@ -126,7 +134,7 @@ class _MyHouseListPage extends State<MyHouseListPage> {
                               houses[index].description,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 14, color: Colors.grey),
+                              style: const TextStyle(fontSize: 14, color: Colors.grey),
                             ),
                           ],
                         ),
