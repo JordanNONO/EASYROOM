@@ -13,11 +13,17 @@
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
-  "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+ "production": {
+    "username": "nathan",
+    "password": "wlupiu8t3kYipIVqSjEX51kymbQM4qC7",
+    "database": "easyroomdb",
+    "host": "dpg-cog3gefsc6pc73f2s5eg-a.frankfurt-postgres.render.com",
+    "dialect": "postgres",
+     "dialectOptions": {
+    "ssl": {
+      "require": true,
+      "rejectUnauthorized": false 
+    }
+  }
   }
 }
