@@ -19,6 +19,8 @@ dependencies:
   # Vérifiez cette ligne pour vous assurer qu'elle a la bonne indentation et la bonne structure
   flutter:
     sdk: flutter
+  firebase_core: ^2.30.0
+  firebase_messaging: ^14.8.2
 
 
   # The following adds the Cupertino Icons font to your application.

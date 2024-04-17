@@ -86,7 +86,7 @@ class _ProfileMainState extends State<ProfileMain> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       radius: 50,
                       backgroundImage: AssetImage('assets/images/default.png'),
                     ),

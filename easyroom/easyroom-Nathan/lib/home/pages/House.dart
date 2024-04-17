@@ -11,7 +11,7 @@ const storage = FlutterSecureStorage();
 
 class HousePage extends StatefulWidget {
   final User? user;
-  const HousePage({Key? key, this.user}) : super(key: key);
+  const HousePage({super.key, this.user});
 
   @override
   State<StatefulWidget> createState() => _HousePageState();
