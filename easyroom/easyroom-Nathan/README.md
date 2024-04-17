@@ -5,7 +5,7 @@
 
 go to server folder and launch server
 
-## config app 
+## config app
 
 (/lib/requests/constant.dart)[/lib/requests/constant.dart] it's config page
 

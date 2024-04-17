@@ -113,7 +113,7 @@ class _ProfileMainState extends State<ProfileMain> {
                     ListTile(
                       leading: const Icon(Icons.email),
                       title: const Text('Email'),
-                      subtitle: Text(user.email),
+                      subtitle: Text(user.lastname),
                     ),
                     ListTile(
                       leading: const Icon(Icons.phone),

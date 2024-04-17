@@ -64,7 +64,7 @@ class _AddReservationModalState extends State<AddReservationModal> {
             ElevatedButton(
               onPressed: _submitForm,
               style: ElevatedButton.styleFrom(
-                primary: Colors.indigo,
+                backgroundColor: Colors.indigo,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
                 padding: EdgeInsets.symmetric(vertical: 16.0),
               ),

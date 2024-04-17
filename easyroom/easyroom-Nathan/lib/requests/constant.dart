@@ -1,2 +1,2 @@
-String API_URL = "http://127.0.0.1:4500";
+String API_URL = "http://192.168.5.253:4500";
 String BASE_URL = "$API_URL/api/v1";

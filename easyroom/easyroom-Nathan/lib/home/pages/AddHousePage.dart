@@ -203,7 +203,7 @@ class _AddHousePageState extends State<AddHousePage> {
               child: ElevatedButton(
                 onPressed: uploadHouse,
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.blue,
+                  backgroundColor: Colors.blue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
