@@ -115,7 +115,6 @@ router.get("/", protect(), async (_req, res) => {
 		const houses = [];
 		const house = await db.House.findAll({
 			include: ["User", "Favorite"],
-			where: { user_id: _req.user.id },
 			raw: true,
 		});
 		for (const key in house) {
