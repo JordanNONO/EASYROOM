@@ -19,7 +19,7 @@ class HomeRentDetailPage extends StatelessWidget {
   final dynamic house;
   final User? user;
 
-  const HomeRentDetailPage({Key? key, required this.house, this.user}) : super(key: key);
+  const HomeRentDetailPage({super.key, required this.house, this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class HomeRentDetailPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Image.network(
-                "${API_URL}/${house.images.first.image}",
+                "${house.images.first.image}",
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
@@ -117,7 +117,7 @@ class HomeRentDetailPage extends StatelessWidget {
                     return Row(
                       children: [
                         Image.network(
-                          "${API_URL}/${house.images.first.image}",
+                          "${house.images[index].image}",
                           width: 80,
                           height: 80,
                           fit: BoxFit.cover,

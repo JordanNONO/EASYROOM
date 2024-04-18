@@ -90,7 +90,7 @@ class _HousePageState extends State<HousePage> {
                           child: ListTile(
                             title: Text(house.label),
                             leading:Image.network(
-                              "${API_URL}/${house.images.first.image}",
+                              house.images.first.image,
                               width: 80,
                               height: 80,
                               fit: BoxFit.cover,
