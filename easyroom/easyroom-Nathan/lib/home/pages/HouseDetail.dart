@@ -121,7 +121,6 @@ class HomeRentDetailPage extends StatelessWidget {
                           errorBuilder: (context, error, stackTrace) {
                             return Image.asset(
                               'assets/images/warning.png', // Image de remplacement
-
                               fit: BoxFit.cover,
                             );
                           },
