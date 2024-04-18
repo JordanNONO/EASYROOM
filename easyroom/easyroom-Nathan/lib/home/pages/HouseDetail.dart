@@ -40,14 +40,12 @@ class HomeRentDetailPage extends StatelessWidget {
             children: [
               Image.network(
                 "${house.images.first.image}",
-                width: 80,
-                height: 80,
+
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Image.asset(
                     'assets/images/warning.png', // Image de remplacement
-                    width: 80,
-                    height: 80,
+
                     fit: BoxFit.cover,
                   );
                 },
@@ -118,14 +116,12 @@ class HomeRentDetailPage extends StatelessWidget {
                       children: [
                         Image.network(
                           "${house.images[index].image}",
-                          width: 80,
-                          height: 80,
+
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return Image.asset(
                               'assets/images/warning.png', // Image de remplacement
-                              width: 80,
-                              height: 80,
+
                               fit: BoxFit.cover,
                             );
                           },
