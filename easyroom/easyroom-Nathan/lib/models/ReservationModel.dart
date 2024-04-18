@@ -41,7 +41,7 @@ class RdvUser {
   final bool renHouse;
   final String? birthday;
   final int? genderId;
-  final int roleId;
+  final int? roleId;
   final String password;
   final String createdAt;
   final String updatedAt;
