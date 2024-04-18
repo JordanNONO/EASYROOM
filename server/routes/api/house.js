@@ -247,10 +247,15 @@ router.post('/add', protect(), upload.array("images"), ValidateField, async (req
 			user_id: req.user?.id,
 		});
 		images.map(async (image) => {
-			const result = await cloudinary.v2.uploader.upload(image);
+			try {
+				const result = await cloudinary.v2.uploader.upload("./uploads/"+image.filename);
 			const url = result.secure_url;
 			console.log(url)
 			await db.House_images.create({ image: url, house_id: newHouse.id });
+			} catch (error) {
+				console.log(error)
+				
+			}
 		})
 
 		/* const suscribers = await db.Notification_suscriber.findAll({ raw: true });

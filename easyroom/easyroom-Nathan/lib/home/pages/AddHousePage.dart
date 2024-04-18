@@ -75,6 +75,7 @@ class _AddHousePageState extends State<AddHousePage> {
       Navigator.pop(context);
       print('House added successfully');
     } else {
+      print(response.body);
       print('Failed to add house');
     }
   }

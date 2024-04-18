@@ -64,7 +64,7 @@ class _ReservationPageState extends State<ReservationPage> {
               },
             );
           } else if (snapshot.hasError) {
-            return Center(
+            return const Center(
               child: Image(
                 image: AssetImage("assets/images/warning.png"),
               ),
