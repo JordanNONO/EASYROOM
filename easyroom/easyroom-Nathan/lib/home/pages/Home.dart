@@ -50,7 +50,7 @@ class _MainHomePage extends State<MainHomePage> {
     final token = await storage.read(key: 'token');
 
     final response = await http.get(
-      Uri.parse('$BASE_URL/house/recommanded'),
+      Uri.parse('$BASE_URL/house'),
       headers: {
         'Authorization': 'Bearer $token',
       },

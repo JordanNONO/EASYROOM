@@ -6,7 +6,7 @@ const {
 const db = require("../../models");
 const jwt = require("jsonwebtoken");
 const { protect } = require("../../auth/auth");
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 const router = require("express").Router();
 
 /**
@@ -253,6 +253,24 @@ router.get("/gender",async(req,res)=>{
 	} catch (error) {
 		console.error(error);
         res.status(500).json({ message: 'Internal server error' });
+	}
+})
+
+
+router.post("/suscribe", ValidateField, protect(), async (req, res) => {
+	try {
+		const { token } = req.body
+		const existSuscribe = await db.Notification_suscriber.findOne({ where: { user_id: req.user.id },raw:true });
+		if (!existSuscribe) {
+			await db.Notification_suscriber.create({ token, user_id: req.user.id })
+			return res.status(201)
+		} else {
+			await db.Notification_suscriber.update({ token },{ where:{user_id: req.user.id} })
+			return res.status(201)
+		}
+		return res.status(403)
+	} catch (error) {
+		return res.status(500).send(error)
 	}
 })
 

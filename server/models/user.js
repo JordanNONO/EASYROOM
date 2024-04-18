@@ -17,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
 				foreignKey: "user_id",
 				onDelete: "CASCADE",
 			});
+			this.hasOne(models.Notification_suscriber, {
+				foreignKey: "user_id",
+				onDelete: "CASCADE",
+			});
 			this.belongsTo(models.Gender, {
 				foreignKey: "gender_id",
 				onDelete: "CASCADE",
@@ -31,12 +35,12 @@ module.exports = (sequelize, DataTypes) => {
 			});
 			this.hasMany(models.Chat, {
 				foreignKey: "sender_id",
-				as:"Sender",
+				as: "Sender",
 				onDelete: "CASCADE",
 			});
 			this.hasMany(models.Chat, {
 				foreignKey: "receiver_id",
-				as:"Receiver",
+				as: "Receiver",
 				onDelete: "CASCADE",
 			});
 			this.hasMany(models.Payement, {
