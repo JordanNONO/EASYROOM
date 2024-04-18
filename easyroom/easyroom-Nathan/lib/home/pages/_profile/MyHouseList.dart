@@ -97,7 +97,7 @@ class _MyHouseListPage extends State<MyHouseListPage> {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image.network(
-                                "${API_URL}/${houses[index].images.first.image}",
+                                houses[index].images.first.image,
                                 width: 80,
                                 height: 80,
                                 fit: BoxFit.cover,

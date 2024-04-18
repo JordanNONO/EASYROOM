@@ -27,7 +27,7 @@ class _ReservationListState extends State<ReservationList> {
               child: CircularProgressIndicator(color: Colors.blue),
             );
           } else if (snapshot.hasError) {
-            return Center(
+            return const Center(
               child: Image(image: AssetImage("assets/images/warning.png")),
             );
           } else if (snapshot.hasData) {

@@ -46,7 +46,7 @@ class _MainHomePage extends State<MainHomePage> {
     return null;
   }
 
-  Future<List<HouseRecommanded>?> _fetchHouse() async {
+  Future<List<House>?> _fetchHouse() async {
     final token = await storage.read(key: 'token');
 
     final response = await http.get(
@@ -59,8 +59,8 @@ class _MainHomePage extends State<MainHomePage> {
 
     if (response.statusCode == 200) {
       final List<dynamic> houseDataList = json.decode(response.body);
-      final List<HouseRecommanded> houses =
-          houseDataList.map((houseData) => HouseRecommanded.fromJson(houseData)).toList();
+      final List<House> houses =
+          houseDataList.map((houseData) => House.fromJson(houseData)).toList();
       //print(houses);
       return houses;
     } else {
@@ -177,7 +177,7 @@ class _MainHomePage extends State<MainHomePage> {
                               return ListTile(
                                 title: Text(house[index].label),
                                 leading: Image.network(
-                                  "${API_URL}/${house[index].images.first.image}",
+                                  house[index].images.first.image,
                                   width: 80,
                                   height: 80,
                                   fit: BoxFit.cover,
