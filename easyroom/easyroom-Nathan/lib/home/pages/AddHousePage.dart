@@ -99,9 +99,9 @@ class _AddHousePageState extends State<AddHousePage> {
             TextFormField(
               controller: _labelController,
               keyboardType: TextInputType.text,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: "Titre",
-                prefixIcon: const Icon(Icons.house),
+                prefixIcon: Icon(Icons.house),
               ),
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
@@ -114,9 +114,9 @@ class _AddHousePageState extends State<AddHousePage> {
             TextFormField(
               controller: _priceController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: "Prix",
-                prefixIcon: const Icon(Icons.price_change),
+                prefixIcon: Icon(Icons.price_change),
               ),
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
@@ -129,9 +129,9 @@ class _AddHousePageState extends State<AddHousePage> {
             TextFormField(
               controller: _bedroomsController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: "Nombre de chambres",
-                prefixIcon: const Icon(Icons.bed),
+                prefixIcon: Icon(Icons.bed),
               ),
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
@@ -144,9 +144,9 @@ class _AddHousePageState extends State<AddHousePage> {
             TextFormField(
               controller: _locationController,
               keyboardType: TextInputType.text,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: "Emplacement",
-                prefixIcon: const Icon(Icons.location_pin),
+                prefixIcon: Icon(Icons.location_pin),
               ),
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
@@ -207,7 +207,7 @@ class _AddHousePageState extends State<AddHousePage> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
                 ),
                 child: const Text("Ajouter"),
               ),
