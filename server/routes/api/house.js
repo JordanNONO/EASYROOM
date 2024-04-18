@@ -8,7 +8,7 @@ const {
 } = require("../../middlewares/validation");
 const { Sequelize } = require("sequelize");
 /* const { admin } = require("../../lib/firebase"); */
-import { v2 as cloudinary } from "cloudinary";
+const { v2 as cloudinary }  =require("cloudinary");
 
 cloudinary.config({
 	cloud_name: "dvi66ll0e",
