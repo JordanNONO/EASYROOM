@@ -247,8 +247,9 @@ router.post('/add', protect(), upload.array("images"), ValidateField, async (req
 			user_id: req.user?.id,
 		});
 		images.map(async (image) => {
-			const result = await cloudinary.v2.uploader.upload(image.buffer.toString('base64'));
+			const result = await cloudinary.v2.uploader.upload(image);
 			const url = result.secure_url;
+			console.log(url)
 			await db.House_images.create({ image: url, house_id: newHouse.id });
 		})
 
