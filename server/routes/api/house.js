@@ -8,7 +8,7 @@ const {
 } = require("../../middlewares/validation");
 const { Sequelize } = require("sequelize");
 /* const { admin } = require("../../lib/firebase"); */
-const { v2 as cloudinary }  =require("cloudinary");
+const cloudinary  =require("cloudinary");
 
 cloudinary.config({
 	cloud_name: "dvi66ll0e",
@@ -247,7 +247,7 @@ router.post('/add', protect(), upload.array("images"), ValidateField, async (req
 			user_id: req.user?.id,
 		});
 		images.map(async (image) => {
-			const result = await cloudinary.uploader.upload(image.buffer.toString('base64'));
+			const result = await cloudinary.v2.uploader.upload(image.buffer.toString('base64'));
 			const url = result.secure_url;
 			await db.House_images.create({ image: url, house_id: newHouse.id });
 		})
