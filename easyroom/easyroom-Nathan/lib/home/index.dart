@@ -97,9 +97,12 @@ class _HomePage extends State<HomePage>{
 
             ][currentPageIndex];
           }
-          return const Center(
-            child: Image(image: AssetImage("images/warning.png")),
-          );
+          else{
+            print(snapshot.error);
+            return const Center(
+              child: Image(image: AssetImage("assets/images/warning.png")),
+            );
+          }
         })
     );
   }

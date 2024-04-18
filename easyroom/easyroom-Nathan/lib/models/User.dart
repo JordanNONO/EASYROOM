@@ -6,7 +6,7 @@ class User {
   final dynamic renHouse;
   final String? birthday;
   final int? genderId;
-  final int roleId;
+  final int? roleId;
   final DateTime createdAt;
   final DateTime updatedAt;
 
