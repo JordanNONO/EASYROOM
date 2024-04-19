@@ -219,40 +219,40 @@ router.post("/login", ValidateField, async (req, res) => {
 });
 
 router.get("/me/rdv", protect(), async (req, res) => {
-    try {
-        const userId = req.user.id;  // Get user_id from authenticated user
-
-        const rdv = await db.Reservation.findAll({
-            where: {
-                [Op.or]: [
-                    { '$House.user_id$': userId },
-                ]
-            },
-            include: [{
-                model: db.House,
-				
-                where: {
-                    [Op.or]: [
-                        { user_id: userId },
-                    ]
-                }
-            },{model:db.User}]
-        });
-
-        res.status(200).json(rdv);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
-router.get("/gender",async(req,res)=>{
 	try {
-		const genders = await db.Gender.findAll({raw:true})
-	    return res.status(200).json(genders)
+		const userId = req.user.id;  // Get user_id from authenticated user
+
+		const rdv = await db.Reservation.findAll({
+			where: {
+				[Op.or]: [
+					{ '$House.user_id$': userId },
+				]
+			},
+			include: [{
+				model: db.House,
+
+				where: {
+					[Op.or]: [
+						{ user_id: userId },
+					]
+				}
+			}, { model: db.User }]
+		});
+
+		res.status(200).json(rdv);
 	} catch (error) {
 		console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+		res.status(500).json({ message: 'Internal server error' });
+	}
+});
+
+router.get("/gender", async (req, res) => {
+	try {
+		const genders = await db.Gender.findAll({ raw: true })
+		return res.status(200).json(genders)
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ message: 'Internal server error' });
 	}
 })
 
@@ -260,17 +260,25 @@ router.get("/gender",async(req,res)=>{
 router.post("/suscribe", ValidateField, protect(), async (req, res) => {
 	try {
 		const { token } = req.body
-		const existSuscribe = await db.Notification_suscriber.findOne({ where: { user_id: req.user.id },raw:true });
+		const existSuscribe = await db.Notification_suscriber.findOne({ where: { user_id: req.user.id }, raw: true });
 		if (!existSuscribe) {
 			await db.Notification_suscriber.create({ token, user_id: req.user.id })
 			return res.status(201)
 		} else {
-			await db.Notification_suscriber.update({ token },{ where:{user_id: req.user.id} })
+			await db.Notification_suscriber.update({ token }, { where: { user_id: req.user.id } })
 			return res.status(201)
 		}
 		return res.status(403)
 	} catch (error) {
 		return res.status(500).send(error)
+	}
+})
+router.get("/:id", protect(), async (req, res) => {
+	try {
+		const user = await db.User.findOne({ where: { id: req.params.id } });
+		return res.status(200).json(user)
+	} catch (error) {
+		return res.status(500).send("Internal error")
 	}
 })
 
