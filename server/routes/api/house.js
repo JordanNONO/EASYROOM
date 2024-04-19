@@ -6,7 +6,7 @@ const {
 	ValidateField,
 	ValidateParams,
 } = require("../../middlewares/validation");
-const { Sequelize } = require("sequelize");
+const { Sequelize, where, Op } = require("sequelize");
 /* const { admin } = require("../../lib/firebase"); */
 const cloudinary  =require("cloudinary");
 
@@ -352,5 +352,41 @@ router.delete("/delete/:id", protect(), ValidateField, ValidateParams, async (re
 		return res.status(500).send("Internal error");
 	}
 });
+
+
+router.get("/search", protect(), async (req, res) => {
+	try {
+		const { q } = req.query;
+		const house = await db.House.findAll({ where: { [Op.like]: { label: q } },include: ["User", "Favorite"],
+			raw: true, });
+		const houses = [];
+		
+		for (const key in house) {
+			if (Object.hasOwnProperty.call(house, key)) {
+				const getHouse = house[key];
+				const images = await db.House_images.findAll({ where: { house_id: getHouse?.id }, raw: true }) ?? [];
+				const options = await db.House_option.findAll({ where: { house_id: getHouse?.id }, raw: true }) ?? [];
+
+				// Check if Favorite is not null
+				const isFavorite = getHouse["Favorite.house_id"] !== null;
+
+				houses.push({
+					...getHouse,
+					has_bathroom: getHouse.has_bathroom === 1,
+					has_kitchen: getHouse.has_kitchen === 1,
+					is_rent: getHouse.is_rent === 1,
+					images,
+					options,
+					favorite: isFavorite,
+				});
+			}
+		}
+
+		return res.status(200).json(houses);
+	} catch (error) {
+		return res.status(500).send("Internal error");
+	}
+
+})
 
 module.exports = router;
