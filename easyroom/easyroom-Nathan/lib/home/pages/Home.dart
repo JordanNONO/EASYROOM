@@ -22,6 +22,8 @@ class MainHomePage extends StatefulWidget {
 
 class _MainHomePage extends State<MainHomePage> {
   //late User user; // Define a single User object
+  late List<House?> searchHouse=[];
+  final List<House?> houses = [];
   Future<User?> _fetchUser() async {
     final token = await storage.read(key: 'token');
 
@@ -62,6 +64,7 @@ class _MainHomePage extends State<MainHomePage> {
       final List<House> houses =
           houseDataList.map((houseData) => House.fromJson(houseData)).toList();
       //print(houses);
+
       return houses;
     } else {
       // Handle HTTP error here
@@ -69,6 +72,37 @@ class _MainHomePage extends State<MainHomePage> {
     }
     return null;
   }
+
+  void _searchHouse(query) async {
+    final token = await storage.read(key: 'token');
+
+    final response = await http.get(
+      Uri.parse('$BASE_URL/house/search?q=$query'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    //print(response.statusCode);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> houseDataList = json.decode(response.body);
+      final List<House> houses =
+      houseDataList.map((houseData) => House.fromJson(houseData)).toList();
+      //print(houses);
+      setState(() {
+        searchHouse = houses;
+      });
+
+    } else {
+      // Handle HTTP error here
+      print('HTTP Error: ${response.statusCode}');
+    }
+
+  }
+  /*void _searchHouse(String query) {
+
+    searchHouse = houses.where((house) => house!.label.contains(query)).toList();
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +123,7 @@ class _MainHomePage extends State<MainHomePage> {
                           content: Text("Une erreur s'est produite"));
                     } else if (snapshot.hasData) {
                       User user = snapshot.data!;
+
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -111,34 +146,42 @@ class _MainHomePage extends State<MainHomePage> {
                 height: 35,
               ),
               SearchAnchor(
-                  builder: (BuildContext context, SearchController controller) {
-                return SearchBar(
-                  hintText: "Dit moi, quelle maison tu veux...",
-                  controller: controller,
-                  padding: const MaterialStatePropertyAll<EdgeInsets>(
-                      EdgeInsets.symmetric(horizontal: 16.0)),
-                  onTap: () {
-                    controller.openView();
-                  },
-                  onChanged: (_) {
-                    controller.openView();
-                  },
-                  leading: const Icon(Icons.search),
-                );
-              }, suggestionsBuilder:
-                      (BuildContext context, SearchController controller) {
-                return List<ListTile>.generate(5, (int index) {
-                  final String item = 'item $index';
-                  return ListTile(
-                    title: Text(item),
+                builder: (BuildContext context, SearchController controller) {
+                  return SearchBar(
+                    hintText: "Dis-moi, quelle maison tu veux...",
+                    controller: controller,
+                    padding: MaterialStateProperty.all<EdgeInsets>(
+                      const EdgeInsets.symmetric(horizontal: 16.0),
+                    ),
                     onTap: () {
-                      setState(() {
-                        controller.closeView(item);
-                      });
+                      controller.openView();
                     },
+                    onChanged: (value) {
+                      print(controller.value);
+                      if (value.isNotEmpty) {
+                        _searchHouse(value);
+                      } else {
+                        searchHouse = []; // Réinitialisez searchHouse si le champ de recherche est vide
+                      }
+                      controller.openView();
+                    },
+                    leading: const Icon(Icons.search),
                   );
-                });
-              }),
+                },
+                suggestionsBuilder: (BuildContext context, SearchController controller) {
+                  return  searchHouse.map((house) {
+                    return ListTile(
+                      title: Text(house!.label),
+                      onTap: () {
+                        setState(() {
+                          controller.closeView(house.label);
+                        });
+                      },
+                    );
+                  }).toList();
+                },
+              ),
+
               const SizedBox(
                 height: 20,
               ),
@@ -171,6 +214,7 @@ class _MainHomePage extends State<MainHomePage> {
                         return const SnackBar(content: Text("Une erreur s'est produite"));
                       }else if(snapshot.hasData){
                        final house = snapshot.data!;
+
                         return ListView.builder(
                             itemCount: house.length,
                             itemBuilder: (context, index) {

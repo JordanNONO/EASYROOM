@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:easyroom/Screens/Login/login_screen.dart';
 import 'package:easyroom/models/ReservationModel.dart';
 import 'package:easyroom/requests/constant.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +13,7 @@ const storage = FlutterSecureStorage();
 class ChatScreen extends StatefulWidget {
   final ReservationModel rdv;
   final User user;
-
-  const ChatScreen({Key? key, required this.rdv, required this.user}) : super(key: key);
+  const ChatScreen({super.key, required this.rdv, required this.user});
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -38,6 +38,28 @@ class _ChatScreenState extends State<ChatScreen> {
   void dispose() {
     _timer.cancel();
     super.dispose();
+  }
+
+  Future<User?> getUser(int userId)async{
+    final token = await storage.read(key: 'token');
+
+    final response = await http.get(
+      Uri.parse('$BASE_URL/user/$userId'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final dynamic clientData = json.decode(response.body);
+      final client = User.fromJson(clientData as Map<String, dynamic>);
+      return client;
+    } else {
+      print('HTTP Error: ${response.statusCode}');
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()));
+    }
+    return null;
   }
 
   void _fetchMessages() async {
@@ -73,7 +95,7 @@ class _ChatScreenState extends State<ChatScreen> {
     ChatMessage message = ChatMessage(
       text: text,
       sender: widget.user,
-      receiver: widget.rdv.house.userId,
+      receiver: await getUser(widget.rdv.house.userId),
       connectedUser: widget.user,
     );
     setState(() {
@@ -85,7 +107,7 @@ class _ChatScreenState extends State<ChatScreen> {
       body: jsonEncode({
         'message': text,
         "house_id": widget.rdv.houseId,
-        "receiver_id": widget.rdv.house.userId
+        "receiver_id": widget.user.id == widget.rdv.house.userId ? widget.rdv.userId :widget.rdv.house.userId
       }),
       headers: {
         'Authorization': 'Bearer $token',
@@ -141,7 +163,7 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(8.0),
-              reverse: true,
+              reverse: false,
               itemCount: _messages.length,
               itemBuilder: (_, int index) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -165,10 +187,10 @@ class _ChatScreenState extends State<ChatScreen> {
 class ChatMessage extends StatelessWidget {
   final String text;
   final User sender;
-  final dynamic receiver;
+  final User? receiver;
   final User connectedUser;
 
-  const ChatMessage({Key? key, required this.text, required this.sender, required this.receiver, required this.connectedUser}) : super(key: key);
+  const ChatMessage({super.key, required this.text, required this.sender,  this.receiver, required this.connectedUser});
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +211,7 @@ class ChatMessage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(sender.name, style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(isSender ? 'Moi' : sender.name, style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 4.0),
           Text(text),
         ],

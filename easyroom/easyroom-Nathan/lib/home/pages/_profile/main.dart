@@ -140,8 +140,19 @@ class _ProfileMainState extends State<ProfileMain> {
                       Column(
                         children: recentHouses.map<Widget>((house) {
                           return ListTile(
-                            leading: CircleAvatar(
-                              backgroundImage: NetworkImage('${BASE_URL}/${house.images.first.image}'),
+                            leading: Image.network(
+                              house.images.first.image,
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
+                                  'assets/images/warning.png', // Image de remplacement
+                                  width: 80,
+                                  height: 80,
+                                  fit: BoxFit.cover,
+                                );
+                              },
                             ),
                             title: Text(house.label),
                             subtitle: Text(house.location),
