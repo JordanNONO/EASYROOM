@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:easyroom/models/User.dart';
+import 'package:intl/intl.dart';
 
 const storage = FlutterSecureStorage();
 
@@ -78,6 +79,7 @@ class _ChatScreenState extends State<ChatScreen> {
         sender: User.fromJson(e['Sender']),
         receiver: User.fromJson(e['Receiver']),
         connectedUser: widget.user,
+        createdAt:e["createdAt"]
       )).toList();
 
       setState(() {
@@ -97,6 +99,7 @@ class _ChatScreenState extends State<ChatScreen> {
       sender: widget.user,
       receiver: await getUser(widget.rdv.house.userId),
       connectedUser: widget.user,
+      createdAt: DateTime.now().toString(),
     );
     setState(() {
       _messages.insert(0, message);
@@ -189,8 +192,10 @@ class ChatMessage extends StatelessWidget {
   final User sender;
   final User? receiver;
   final User connectedUser;
+  final String? createdAt;
 
-  const ChatMessage({super.key, required this.text, required this.sender,  this.receiver, required this.connectedUser});
+  const ChatMessage({super.key, required this.text, required this.sender,  this.receiver, required this.connectedUser,  this.
+  createdAt,});
 
   @override
   Widget build(BuildContext context) {
@@ -214,6 +219,12 @@ class ChatMessage extends StatelessWidget {
           Text(isSender ? 'Moi' : sender.name, style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 4.0),
           Text(text),
+           Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(createdAt!)))
+            ],
+          )
         ],
       ),
     );
