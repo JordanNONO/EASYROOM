@@ -1,4 +1,3 @@
-import 'package:easyroom/Screens/Signup/signup_screen.dart';
 import 'package:easyroom/requests/register.dart';
 import 'package:flutter/material.dart';
 

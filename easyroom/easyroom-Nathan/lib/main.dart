@@ -25,7 +25,7 @@ class _MyApp extends State<MyApp> {
   final FirebaseApi _firebaseApi = FirebaseApi();
   void _handleMessage(RemoteMessage message) {
     if (message.data['type'] == 'chat') {
-      Navigator.push(context as BuildContext,
+      Navigator.push(context,
           MaterialPageRoute(builder: (context) => const HomePage()));
     }
   }

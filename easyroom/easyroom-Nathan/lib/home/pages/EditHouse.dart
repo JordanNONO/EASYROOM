@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class EditHousePage extends StatefulWidget {
   final House house;
 
-  const EditHousePage({Key? key, required this.house}) : super(key: key);
+  const EditHousePage({super.key, required this.house});
 
   @override
   State<StatefulWidget> createState() => _EditHousePageState();
@@ -35,7 +35,7 @@ class _EditHousePageState extends State<EditHousePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Modifier"),
+        title: const Text("Modifier"),
         centerTitle: true,
       ),
       body: Padding(
@@ -46,33 +46,33 @@ class _EditHousePageState extends State<EditHousePage> {
             children: [
               TextFormField(
                 controller: _labelController,
-                decoration: InputDecoration(labelText: 'Label'),
+                decoration: const InputDecoration(labelText: 'Label'),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: const InputDecoration(labelText: 'Description'),
                 maxLines: 3,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _priceController,
-                decoration: InputDecoration(labelText: 'Prix'),
+                decoration: const InputDecoration(labelText: 'Prix'),
                 keyboardType: TextInputType.number,
               ),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () {
                   // TODO: Enregistrer les modifications
                 },
-                child: Text('Enregistrer'),
+                child: const Text('Enregistrer'),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               TextButton(
                 onPressed: () {
                   // TODO: Annuler l'édition
                 },
-                child: Text('Annuler'),
+                child: const Text('Annuler'),
               ),
             ],
           ),

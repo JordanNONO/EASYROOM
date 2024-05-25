@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:easyroom/Screens/Login/login_screen.dart';
 import 'package:easyroom/home/pages/HouseDetail.dart';
 import 'package:easyroom/models/House.dart';
-import 'package:easyroom/models/Recommandation.dart';
 import 'package:easyroom/models/User.dart';
 import 'package:easyroom/requests/constant.dart';
 import 'package:flutter/material.dart';
@@ -150,7 +149,7 @@ class _MainHomePage extends State<MainHomePage> {
                   return SearchBar(
                     hintText: "Dis-moi, quelle maison tu veux...",
                     controller: controller,
-                    padding: MaterialStateProperty.all<EdgeInsets>(
+                    padding: WidgetStateProperty.all<EdgeInsets>(
                       const EdgeInsets.symmetric(horizontal: 16.0),
                     ),
                     onTap: () {

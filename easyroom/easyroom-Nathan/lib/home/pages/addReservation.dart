@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class AddReservationModal extends StatefulWidget {
   final House house;
 
-  const AddReservationModal({Key? key, required this.house}) : super(key: key);
+  const AddReservationModal({super.key, required this.house});
 
   @override
   _AddReservationModalState createState() => _AddReservationModalState();
@@ -31,9 +31,9 @@ class _AddReservationModalState extends State<AddReservationModal> {
           children: [
             Text(
               'Réserver ${widget.house.label}',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.indigo),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.indigo),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             DateTimeFormField(
               decoration: InputDecoration(
                 labelText: 'Sélectionner une date',
@@ -45,11 +45,11 @@ class _AddReservationModalState extends State<AddReservationModal> {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.indigo),
+                  borderSide: const BorderSide(color: Colors.indigo),
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-                suffixIcon: Icon(Icons.calendar_today, color: Colors.indigo),
+                contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                suffixIcon: const Icon(Icons.calendar_today, color: Colors.indigo),
               ),
               firstDate: DateTime.now().add(const Duration(days: 10)),
               lastDate: DateTime.now().add(const Duration(days: 40)),
@@ -60,15 +60,15 @@ class _AddReservationModalState extends State<AddReservationModal> {
                 });
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _submitForm,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.indigo,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-                padding: EdgeInsets.symmetric(vertical: 16.0),
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
               ),
-              child: Text(
+              child: const Text(
                 'Réserver',
                 style: TextStyle(fontSize: 18),
               ),

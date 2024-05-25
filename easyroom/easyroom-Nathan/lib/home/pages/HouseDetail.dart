@@ -3,7 +3,6 @@ import 'package:easyroom/home/pages/addReservation.dart';
 import 'package:easyroom/requests/ApiService.dart';
 import 'package:flutter/material.dart';
 import 'package:easyroom/models/House.dart';
-import 'package:easyroom/requests/constant.dart';
 import '../../models/User.dart';
 
 void _showAddReservationModal(BuildContext context, House house) {
@@ -55,7 +54,7 @@ class HomeRentDetailPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(house.label, style: Theme.of(context).textTheme.headline6),
+                  Text(house.label, style: Theme.of(context).textTheme.headlineSmall),
                   IconButton(
                     onPressed: () {
                       ApiService.setFavorite(house.id);
@@ -88,7 +87,7 @@ class HomeRentDetailPage extends StatelessWidget {
               Row(
                 children: [
                   const Icon(Icons.location_pin),
-                  Text(house.location, style: Theme.of(context).textTheme.subtitle1),
+                  Text(house.location, style: Theme.of(context).textTheme.labelSmall),
                 ],
               ),
               const SizedBox(height: 8.0),
@@ -99,11 +98,11 @@ class HomeRentDetailPage extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16.0),
-              Text('Description:', style: Theme.of(context).textTheme.subtitle1),
+              Text('Description:', style: Theme.of(context).textTheme.labelMedium),
               const SizedBox(height: 8.0),
               Text(
                 house.description,
-                style: Theme.of(context).textTheme.bodyText2,
+                style: Theme.of(context).textTheme.labelMedium,
               ),
               const SizedBox(height: 16.0),
               SizedBox(

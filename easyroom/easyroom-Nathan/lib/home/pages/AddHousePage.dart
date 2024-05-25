@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'package:easyroom/constants.dart';
-import 'package:easyroom/home/index.dart';
 import 'package:easyroom/requests/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,14 +8,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 const storage = FlutterSecureStorage();
 
 class AddHousePage extends StatefulWidget {
-  const AddHousePage({Key? key});
+  const AddHousePage({super.key});
   @override
   _AddHousePageState createState() => _AddHousePageState();
 }
 
 class _AddHousePageState extends State<AddHousePage> {
-  late File _image;
-  List<XFile>? _mediaFileList;
+  final List<XFile> _mediaFileList = [];
   final ImagePicker _picker = ImagePicker();
   final TextEditingController _labelController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
@@ -27,12 +24,52 @@ class _AddHousePageState extends State<AddHousePage> {
   bool _bathrooms = false;
   bool _kitchen = false;
 
-  Future getImage() async {
-    final List<XFile> pickedFileList = await _picker.pickMultiImage();
+  Future<void> _pickImages() async {
+    final List<XFile>? pickedFileList = await _picker.pickMultiImage();
+    if (pickedFileList != null) {
+      setState(() {
+        _mediaFileList.addAll(pickedFileList);
+      });
+    }
+  }
 
-    setState(() {
-      _mediaFileList = pickedFileList;
-    });
+  Future<void> _captureImage() async {
+    final XFile? pickedImage = await _picker.pickImage(source: ImageSource.camera);
+    if (pickedImage != null) {
+      setState(() {
+        _mediaFileList.add(pickedImage);
+      });
+    }
+  }
+
+  void _showPickerOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.photo_library),
+                title: Text('Gallery'),
+                onTap: () {
+                  _pickImages();
+                  Navigator.of(context).pop();
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.camera_alt),
+                title: Text('Camera'),
+                onTap: () {
+                  _captureImage();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> uploadHouse() async {
@@ -56,13 +93,13 @@ class _AddHousePageState extends State<AddHousePage> {
       ..fields['bathrooms'] = _bathrooms.toString()
       ..fields['kitchen'] = _kitchen.toString();
 
-    for (var i = 0; i < _mediaFileList!.length; i++) {
-      final byteData = await _mediaFileList![i].readAsBytes();
+    for (var i = 0; i < _mediaFileList.length; i++) {
+      final byteData = await _mediaFileList[i].readAsBytes();
       final buffer = byteData.buffer.asUint8List();
       final multipartFile = http.MultipartFile.fromBytes(
         'images',
         buffer,
-        filename: _mediaFileList![i].name,
+        filename: _mediaFileList[i].name,
       );
       request.files.add(multipartFile);
     }
@@ -71,8 +108,8 @@ class _AddHousePageState extends State<AddHousePage> {
     request.headers['Content-Type'] = 'multipart/form-data';
 
     final response = await http.Response.fromStream(await request.send());
+    Navigator.pop(context);
     if (response.statusCode == 201) {
-      Navigator.pop(context);
       print('House added successfully');
     } else {
       print(response.body);
@@ -92,9 +129,19 @@ class _AddHousePageState extends State<AddHousePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ElevatedButton.icon(
-              onPressed: getImage,
+              onPressed: () => _showPickerOptions(context),
               icon: const Icon(Icons.image_outlined),
-              label: const Text("Sélectionner des photos"),
+              label: const Text("Sélectionner des photos ou Capturer des images"),
+            ),
+            const SizedBox(height: 18),
+            _mediaFileList.isEmpty
+                ? Text('Aucune image sélectionnée.')
+                : Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: _mediaFileList.map((image) {
+                return Image.file(File(image.path), width: 100, height: 100);
+              }).toList(),
             ),
             const SizedBox(height: 18),
             TextFormField(

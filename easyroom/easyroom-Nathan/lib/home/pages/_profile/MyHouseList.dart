@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 const storage = FlutterSecureStorage();
 
 class MyHouseListPage extends StatefulWidget {
-  const MyHouseListPage({Key? key, required this.user}) : super(key: key);
+  const MyHouseListPage({super.key, required this.user});
   final User user;
 
   @override

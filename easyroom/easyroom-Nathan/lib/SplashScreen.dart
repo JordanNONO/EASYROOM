@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 class SplashScreen extends StatelessWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class SplashScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20), // Espacement entre l'image et le texte
-          Text(
+          const Text(
             "EASYROOM",
             style: TextStyle(
               fontSize: 35,
@@ -31,7 +31,7 @@ class SplashScreen extends StatelessWidget {
       ),
       nextScreen: OnboardingPage(),
       splashIconSize: 400,
-      backgroundColor: Color.fromARGB(255, 239, 244, 253),
+      backgroundColor: const Color.fromARGB(255, 239, 244, 253),
     );
   }
 }

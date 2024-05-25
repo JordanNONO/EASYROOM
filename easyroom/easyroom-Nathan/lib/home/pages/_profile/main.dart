@@ -11,7 +11,7 @@ import 'package:http/http.dart' as http;
 const storage = FlutterSecureStorage();
 
 class ProfileMain extends StatefulWidget {
-  const ProfileMain({Key? key});
+  const ProfileMain({super.key});
 
   @override
   State<ProfileMain> createState() => _ProfileMainState();
@@ -127,7 +127,7 @@ class _ProfileMainState extends State<ProfileMain> {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'Nombre de maisons publiées: ${gethouses!.length}',
+                      'Nombre de maisons publiées: ${gethouses.length}',
                       style: const TextStyle(fontSize: 18),
                     ),
                     const SizedBox(height: 20),

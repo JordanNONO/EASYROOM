@@ -7,7 +7,7 @@ import '../../models/Gender.dart';
 class ProfileEditPage extends StatefulWidget {
   final User userData;
 
-  const ProfileEditPage({required this.userData, Key? key}) : super(key: key);
+  const ProfileEditPage({required this.userData, super.key});
 
   @override
   _ProfileEditPageState createState() => _ProfileEditPageState();

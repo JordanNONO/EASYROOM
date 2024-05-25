@@ -6,10 +6,10 @@ class SocalIcon extends StatelessWidget {
   final String? iconSrc;
   final Function? press;
   const SocalIcon({
-    Key? key,
+    super.key,
     this.iconSrc,
     this.press,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

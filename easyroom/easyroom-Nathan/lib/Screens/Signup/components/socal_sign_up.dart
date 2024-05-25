@@ -5,8 +5,8 @@ import '../../../screens/Signup/components/social_icon.dart';
 
 class SocalSignUp extends StatelessWidget {
   const SocalSignUp({
-   Key? key,
-   }) : super(key: key);
+   super.key,
+   });
 
    @override
    Widget build(BuildContext context) {

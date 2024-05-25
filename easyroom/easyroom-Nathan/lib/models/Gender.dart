@@ -22,10 +22,10 @@ class Gender {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
-      'id': this.id,
-      'label': this.label,
-      'createdAt': this.createdAt,
-      'updatedAt': this.updatedAt,
+      'id': id,
+      'label': label,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
     };
     return data;
   }

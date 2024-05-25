@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class ReservationPage extends StatefulWidget {
   final User user;
 
-  const ReservationPage({required this.user, Key? key}) : super(key: key);
+  const ReservationPage({required this.user, super.key});
 
   @override
   State<StatefulWidget> createState() => _ReservationPageState();

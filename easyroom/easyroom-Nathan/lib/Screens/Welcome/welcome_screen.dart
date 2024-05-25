@@ -6,7 +6,7 @@ import 'components/login_signup_btn.dart';
 import 'components/welcome_image.dart';
 
 class WelcomeScreen extends StatelessWidget {
-  const WelcomeScreen({Key? key}) : super(key: key);
+  const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +43,8 @@ class WelcomeScreen extends StatelessWidget {
 
 class MobileWelcomeScreen extends StatelessWidget {
   const MobileWelcomeScreen({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
