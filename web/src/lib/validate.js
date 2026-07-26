@@ -19,6 +19,5 @@ export const formDataToFormData = (formData) => {
 		form.append(key, formData[key]);
 	  }
 	}
-	console.log(form)
 	return form;
   };

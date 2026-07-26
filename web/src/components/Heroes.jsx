@@ -1,6 +1,5 @@
 import { Button, Heading } from '@radix-ui/themes'
 import React from 'react'
-import illustration from "../img/undraw_house_searching_re_stk8.svg"
 
 function Heroes() {
   return (
@@ -20,11 +19,6 @@ function Heroes() {
 					</Button>
               </div>
               <div className='w-full'></div>
-				{/* <img
-					src={illustration}
-					className='w-1/2'
-					alt='Illustration'
-				/> */}
 			</div>
 		</div>
 	);

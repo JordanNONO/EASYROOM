@@ -1,23 +1,34 @@
 import { Avatar, Button, DropdownMenu } from '@radix-ui/themes';
 import React from 'react'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom'
-import { RENT_HOUSE_PATH } from '../api/paths';
+import { RENT_HOUSE_PATH, authHeader } from '../api/paths';
 import { toast } from 'react-toastify';
+import { logout } from '../redux/features/user';
 
 function Navbar() {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     const user = useSelector((state)=>state.UserReduce.userData)
     function rentHouse() {
         fetch(RENT_HOUSE_PATH.url, {
-					...RENT_HOUSE_PATH,
+					method: RENT_HOUSE_PATH.method,
+					headers: authHeader(),
 				})
 					.then(async (r) => {
 						if (r.status === 200) {
 							toast.success("Eh bien....");
+							window.location.reload();
+						} else {
+							toast.error("Unable to rent the house");
 						}
 					})
-					.catch((err) => {});
+					.catch(() => {
+						toast.error("Network error, please try again");
+					});
+    }
+    function handleLogout() {
+        dispatch(logout())
     }
   return (
 		<nav>
@@ -55,7 +66,7 @@ function Navbar() {
 								<div>
 								<Avatar
 									
-									fallback={String(user.name).at(0)+ String(user.lastname).at(0)}
+									fallback={((user?.name?.[0] ?? "") + (user?.lastname?.[0] ?? "")) || "?"}
 								/>
 								
 								</div>
@@ -78,7 +89,8 @@ function Navbar() {
 							
 							<Button
 								variant={"solid"}
-								color={"red"}>
+								color={"red"}
+								onClick={handleLogout}>
 								Déconnexion
 							</Button>
 							</DropdownMenu.Content>

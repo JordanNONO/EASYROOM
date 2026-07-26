@@ -1,8 +1,8 @@
 import { Button, Switch, TextArea, TextField } from '@radix-ui/themes';
 import React, { useState } from 'react';
-import { formDataToFormData, isNotEmpty } from '../lib/validate';
+import { isNotEmpty } from '../lib/validate';
 import { toast } from 'react-toastify';
-import { ADD_HOUSE_PATH } from '../api/paths';
+import { ADD_HOUSE_PATH, authHeader } from '../api/paths';
 
 const AddHouseForm = () => {
   const [formData, setFormData] = useState({
@@ -37,11 +37,15 @@ const AddHouseForm = () => {
         img_formData.append("images",image)
     }
     if (isNotEmpty(rest)) {
-        fetch(ADD_HOUSE_PATH.url,{...ADD_HOUSE_PATH,body:img_formData}).then((r)=>{
+        fetch(ADD_HOUSE_PATH.url,{method: ADD_HOUSE_PATH.method, headers: authHeader(), body:img_formData}).then(async (r)=>{
             if (r.status === 201) {
                  toast.success("House is created successfully")
                  return window.location.reload()
+            } else {
+                 toast.error(await r.text())
             }
+        }).catch(() => {
+            toast.error("Network error, please try again")
         })
     }else{
         return toast.warn("Field are empty");
@@ -58,6 +62,7 @@ const AddHouseForm = () => {
           </label>
           <input
             type="text"
+            id="title"
             name="title"
             value={formData.title}
             onChange={handleChange}
@@ -71,6 +76,7 @@ const AddHouseForm = () => {
           </label>
           <input
             type="text"
+            id="location"
             name="location"
             value={formData.location}
             onChange={handleChange}
@@ -84,6 +90,7 @@ const AddHouseForm = () => {
           </label>
           <input
             type="number"
+            id="price"
             name="price"
             value={formData.price}
             onChange={handleChange}
@@ -97,6 +104,7 @@ const AddHouseForm = () => {
           </label>
           <input
             type="number"
+            id="bedrooms"
             name="bedrooms"
             value={formData.bedrooms}
             onChange={handleChange}
@@ -109,16 +117,16 @@ const AddHouseForm = () => {
           <label htmlFor="bathrooms" className="block font-medium text-gray-700">
             Salles de bain :
           </label>
-          
-          <Switch name='bathrooms' checked={formData.bathrooms}  value={formData.bathrooms}
+
+          <Switch id='bathrooms' name='bathrooms' checked={formData.bathrooms}  value={formData.bathrooms}
             onCheckedChange={(value)=>setFormData({...formData,bathrooms:value})}/>
         </div>
         <div className='flex items-center'>
-          <label htmlFor="bathrooms" className="block font-medium text-gray-700">
+          <label htmlFor="kitchen" className="block font-medium text-gray-700">
             Cuisine :
           </label>
-          
-          <Switch name='kitchen' checked={formData.kitchen}  value={formData.kitchen}
+
+          <Switch id='kitchen' name='kitchen' checked={formData.kitchen}  value={formData.kitchen}
             onCheckedChange={(value)=>setFormData({...formData,kitchen:value})}/>
         </div>
        </div>
@@ -131,6 +139,7 @@ const AddHouseForm = () => {
           </label>
           <input
             type="file"
+            id="images"
             name="images"
             multiple
             onChange={handleChange}

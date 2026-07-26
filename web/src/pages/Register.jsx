@@ -8,32 +8,33 @@ import { REGISTER_PATH } from "../api/paths";
 
 function Register() {
 	const [userData, setUserData] = useState({ contact: "",name:"",lastname:"", password: "" });
-	//const { name,lastname,contact, password } = userData;
 	function handleChangeData(e) {
 		setUserData((prevData) => ({
 			...prevData,
 			[e.target?.id]: e.target?.value,
 		}));
-    }
-    const navigate = useNavigate()
-    const handleRegister = (e) => {
-        e.preventDefault()
-        if (isNotEmpty(userData)) {
-            fetch(REGISTER_PATH.url, {
-                method: REGISTER_PATH.method,
-                headers: REGISTER_PATH.headers,
-                body:JSON.stringify(userData)
-            }).then(async(response) => {
-                if (response.status === 201) {
-                    toast.success("You are wellcome")
-                    return navigate("/login")
-                } else {
-                    toast.error(await response.text)
-                }
-            })
-        } else {
-            return toast.warn("Field are empty")
-        }
+	}
+	const navigate = useNavigate()
+	const handleRegister = (e) => {
+		e.preventDefault()
+		if (isNotEmpty(userData)) {
+			fetch(REGISTER_PATH.url, {
+				method: REGISTER_PATH.method,
+				headers: REGISTER_PATH.headers,
+				body:JSON.stringify(userData)
+			}).then(async(response) => {
+				if (response.status === 201) {
+					toast.success("You are wellcome")
+					return navigate("/login")
+				} else {
+					toast.error(await response.text())
+				}
+			}).catch(() => {
+				toast.error("Network error, please try again")
+			})
+		} else {
+			return toast.warn("Field are empty")
+		}
 	};
 
 	return (
@@ -52,6 +53,7 @@ function Register() {
 						<TextField.Input
 							type='tel'
 							id='contact'
+							aria-label='Contact'
 							onChange={handleChangeData}
 							size={"3"}
 							placeholder='Contact'
@@ -65,6 +67,7 @@ function Register() {
 							<TextField.Input
 								type='text'
 								id='name'
+								aria-label='Name'
 								onChange={handleChangeData}
 								size={"3"}
 								placeholder='Name'
@@ -77,6 +80,7 @@ function Register() {
 							<TextField.Input
 								type='text'
 								id='lastname'
+								aria-label='Lastname'
 								onChange={handleChangeData}
 								size={"3"}
 								placeholder='lastname'
@@ -90,6 +94,7 @@ function Register() {
 						<TextField.Input
 							type='password'
 							id='password'
+							aria-label='Password'
 							onChange={handleChangeData}
 							size={"3"}
 							placeholder='Password'

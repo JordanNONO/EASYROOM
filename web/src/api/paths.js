@@ -1,5 +1,10 @@
 import { BASE_URL } from "./common";
 
+export function authHeader() {
+	const token = sessionStorage.getItem("token");
+	return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 export const REGISTER_PATH = {
 	url: `${BASE_URL}/user/add`,
 	method: "POST",
@@ -19,32 +24,19 @@ export const LOGIN_PATH = {
 export const FETCH_USER_PATH = {
 	url: `${BASE_URL}/user/me`,
 	method: "GET",
-	headers: {
-		Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-	},
 };
 
 export const FETCH_HOUSE_PATH = {
 	url: `${BASE_URL}/house`,
 	method: "GET",
-	headers: {
-		Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-	},
 };
 
 export const ADD_HOUSE_PATH = {
 	url: `${BASE_URL}/house/add`,
 	method: "POST",
-	headers: {
-		Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-		//"Content-type": "application/json",
-	},
 };
 
 export const RENT_HOUSE_PATH = {
 	url: `${BASE_URL}/user/rent-house`,
 	method: "POST",
-	headers: {
-		Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-	},
 };

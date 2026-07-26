@@ -13,17 +13,11 @@ function App() {
 			<BrowserRouter>
 				<Navbar />
 				<Routes>
-					<Route
-						path='/'
-						element={<PrivateRoute />}>
+					<Route element={<PrivateRoute />}>
 						<Route
 							path='/'
 							element={<Home />}
 						/>
-					</Route>
-					<Route
-						path='/dashboard'
-						element={<PrivateRoute />}>
 						<Route
 							path='/dashboard'
 							element={<Dashboard />}
