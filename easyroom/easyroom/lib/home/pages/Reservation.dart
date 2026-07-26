@@ -13,6 +13,14 @@ class ReservationPage extends StatefulWidget {
 }
 
 class _ReservationPageState extends State<ReservationPage> {
+  late final Future<List<dynamic>> _reservationsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _reservationsFuture = ApiService.fetchReservations();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +30,7 @@ class _ReservationPageState extends State<ReservationPage> {
         centerTitle: true,
       ),
       body: FutureBuilder(
-        future: ApiService.fetchReservations(),
+        future: _reservationsFuture,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

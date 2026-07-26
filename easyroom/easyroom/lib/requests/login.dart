@@ -17,22 +17,23 @@ Future<void> login(BuildContext context,emailController,passwordController) asyn
     },
   );
 
-  final user = await ApiService.LoginRequest(username, password);
+  bool success = false;
+  try {
+    success = await ApiService.LoginRequest(username, password);
+  } finally {
+    if (context.mounted) Navigator.pop(context);
+  }
 
-  // Dismiss the progress indicator dialog
-  print(user);
-  if (user !=false ) {
-    Navigator.pop(context);
+  if (!context.mounted) return;
 
+  if (success) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => const HomePage(), // Replace MainPage with the destination page.
       ),
     );
-
   } else {
-    Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         backgroundColor: Colors.redAccent,

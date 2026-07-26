@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:easyroom/Screens/Login/login_screen.dart';
+import 'package:easyroom/constants.dart';
 import 'package:easyroom/models/ReservationModel.dart';
 import 'package:easyroom/requests/constant.dart';
 import 'package:flutter/material.dart';
@@ -210,7 +211,7 @@ class ChatMessage extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-        color: isSender ? Colors.blue[100] : Colors.grey[200],
+        color: isSender ? kAccentLightColor : Colors.grey[200],
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Column(

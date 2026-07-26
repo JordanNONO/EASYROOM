@@ -2,10 +2,16 @@ import 'package:easyroom/auth/Login.dart';
 import 'package:easyroom/requests/requests.dart';
 import 'package:flutter/material.dart';
 
-Future<void> register(BuildContext context,nameController,contactController,passwordController,lastNameController) async {
+Future<void> register(
+  BuildContext context,
+  TextEditingController nameController,
+  TextEditingController contactController,
+  TextEditingController passwordController,
+  TextEditingController lastNameController,
+) async {
   final contact = contactController.text;
   final name = nameController.text;
-  final lastname = lastNameController;
+  final lastname = lastNameController.text;
   final password = passwordController.text;
 
   // Show the progress indicator while performing the login operation.
@@ -19,23 +25,19 @@ Future<void> register(BuildContext context,nameController,contactController,pass
     },
   );
 
-  //print("$contact,$email,$password");
-  final user = await registerRequest(contact, name,lastname, password);
+  final success = await registerRequest(contact, name, lastname, password);
 
-  // Dismiss the progress indicator dialog
-  print(user);
-  if (user !=false ) {
-    Navigator.pop(context);
+  if (!context.mounted) return;
+  Navigator.pop(context);
 
+  if (success) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const LoginPage(), // Replace MainPage with the destination page.
+        builder: (context) => const LoginPage(),
       ),
     );
-
   } else {
-    Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         backgroundColor: Colors.redAccent,

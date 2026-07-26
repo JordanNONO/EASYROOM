@@ -19,23 +19,23 @@ Future<void> register(BuildContext context,nameController,contactController,pass
     },
   );
 
-  //print("$contact,$email,$password");
-  final user = await ApiService.registerRequest(contact, name,lastname, password);
+  bool success = false;
+  try {
+    success = await ApiService.registerRequest(contact, name, lastname, password);
+  } finally {
+    if (context.mounted) Navigator.pop(context);
+  }
 
-  // Dismiss the progress indicator dialog
-  print(user);
-  if (user !=false ) {
-    Navigator.pop(context);
+  if (!context.mounted) return;
 
+  if (success) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => const LoginScreen(), // Replace MainPage with the destination page.
       ),
     );
-
   } else {
-    Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         backgroundColor: Colors.redAccent,

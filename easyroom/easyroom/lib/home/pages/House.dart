@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:easyroom/constants.dart';
 import 'package:easyroom/home/pages/HouseDetail.dart';
 import 'package:easyroom/models/House.dart';
 import 'package:easyroom/models/User.dart';
@@ -18,6 +20,14 @@ class HousePage extends StatefulWidget {
 }
 
 class _HousePageState extends State<HousePage> {
+  late final Future<List<House>?> _houseFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _houseFuture = _fetchHouse();
+  }
+
   Future<List<House>?> _fetchHouse() async {
     final token = await storage.read(key: 'token');
 
@@ -65,17 +75,17 @@ class _HousePageState extends State<HousePage> {
             ),
             Expanded(
               child: FutureBuilder(
-                future: _fetchHouse(),
+                future: _houseFuture,
                 builder: (context, AsyncSnapshot<List<House>?> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
-                      child: CircularProgressIndicator(color: Colors.blue),
+                      child: CircularProgressIndicator(color: kAccentColor),
                     );
                   } else if (snapshot.hasError) {
-                    return Center(
+                    return const Center(
                       child: Text(
-                        "Une erreur s'est produite: ${snapshot.error}",
-                        style: const TextStyle(color: Colors.red),
+                        "Une erreur s'est produite, réessayez plus tard",
+                        style: TextStyle(color: Colors.red),
                       ),
                     );
                   } else if (snapshot.hasData) {
@@ -89,19 +99,22 @@ class _HousePageState extends State<HousePage> {
                           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           child: ListTile(
                             title: Text(house.label),
-                            leading:Image.network(
-                              house.images.first.image,
+                            leading: CachedNetworkImage(
+                              imageUrl: house.images.first.image,
                               width: 80,
                               height: 80,
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Image.asset(
-                                  'assets/images/warning.png', // Image de remplacement
-                                  width: 80,
-                                  height: 80,
-                                  fit: BoxFit.cover,
-                                );
-                              },
+                              placeholder: (context, url) => const SizedBox(
+                                width: 80,
+                                height: 80,
+                                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                              ),
+                              errorWidget: (context, url, error) => Image.asset(
+                                'assets/images/warning.png',
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                             subtitle: Text(
                               house.description,

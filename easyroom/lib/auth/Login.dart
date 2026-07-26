@@ -107,7 +107,7 @@ class LoginPage extends StatelessWidget{
                               const Text("Vous n'avez pas de compte"),
                               TextButton(onPressed: (){
                                 Navigator.push(context, MaterialPageRoute(builder:(context)=> const RegisterPage()));
-                              }, child: Text("Créer un compte"))
+                              }, child: const Text("Créer un compte"))
                             ],
                           )
                         ],

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:easyroom/constants.dart';
 import 'package:easyroom/requests/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -78,42 +79,68 @@ class _AddHousePageState extends State<AddHousePage> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return const Center(
-          child: CircularProgressIndicator(color: Colors.blue,),
+          child: CircularProgressIndicator(color: kAccentColor,),
         );
       },
     );
-    final token = await storage.read(key: 'token');
-    final uri = Uri.parse('$BASE_URL/house/add');
-    final request = http.MultipartRequest('POST', uri)
-      ..fields['title'] = _labelController.text
-      ..fields['location'] = _locationController.text
-      ..fields['price'] = _priceController.text
-      ..fields['bedrooms'] = _bedroomsController.text
-      ..fields['description'] = _descriptionController.text
-      ..fields['bathrooms'] = _bathrooms.toString()
-      ..fields['kitchen'] = _kitchen.toString();
 
-    for (var i = 0; i < _mediaFileList.length; i++) {
-      final byteData = await _mediaFileList[i].readAsBytes();
-      final buffer = byteData.buffer.asUint8List();
-      final multipartFile = http.MultipartFile.fromBytes(
-        'images',
-        buffer,
-        filename: _mediaFileList[i].name,
-      );
-      request.files.add(multipartFile);
+    bool success = false;
+    try {
+      final token = await storage.read(key: 'token');
+      final uri = Uri.parse('$BASE_URL/house/add');
+      final request = http.MultipartRequest('POST', uri)
+        ..fields['title'] = _labelController.text
+        ..fields['location'] = _locationController.text
+        ..fields['price'] = _priceController.text
+        ..fields['bedrooms'] = _bedroomsController.text
+        ..fields['description'] = _descriptionController.text
+        ..fields['bathrooms'] = _bathrooms.toString()
+        ..fields['kitchen'] = _kitchen.toString();
+
+      for (var i = 0; i < _mediaFileList.length; i++) {
+        final byteData = await _mediaFileList[i].readAsBytes();
+        final buffer = byteData.buffer.asUint8List();
+        final multipartFile = http.MultipartFile.fromBytes(
+          'images',
+          buffer,
+          filename: _mediaFileList[i].name,
+        );
+        request.files.add(multipartFile);
+      }
+
+      request.headers['Authorization'] = 'Bearer $token';
+
+      final response = await http.Response.fromStream(await request.send());
+      success = response.statusCode == 201;
+    } finally {
+      if (mounted) Navigator.pop(context);
     }
 
-    request.headers['Authorization'] = 'Bearer $token';
-    request.headers['Content-Type'] = 'multipart/form-data';
-
-    final response = await http.Response.fromStream(await request.send());
-    Navigator.pop(context);
-    if (response.statusCode == 201) {
-      print('House added successfully');
+    if (!mounted) return;
+    if (success) {
+      setState(() {
+        _mediaFileList.clear();
+        _labelController.clear();
+        _locationController.clear();
+        _priceController.clear();
+        _bedroomsController.clear();
+        _descriptionController.clear();
+        _bathrooms = false;
+        _kitchen = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.greenAccent,
+          content: Text("Maison ajoutée avec succès"),
+        ),
+      );
     } else {
-      print(response.body);
-      print('Failed to add house');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.redAccent,
+          content: Text("Échec de l'ajout de la maison"),
+        ),
+      );
     }
   }
 
@@ -251,7 +278,7 @@ class _AddHousePageState extends State<AddHousePage> {
               child: ElevatedButton(
                 onPressed: uploadHouse,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: kAccentColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),

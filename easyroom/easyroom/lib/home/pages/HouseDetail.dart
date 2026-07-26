@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easyroom/constants.dart';
 import 'package:easyroom/home/index.dart';
 import 'package:easyroom/home/pages/addReservation.dart';
 import 'package:easyroom/requests/ApiService.dart';
@@ -37,17 +39,14 @@ class HomeRentDetailPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.network(
-                "${house.images.first.image}",
-
+              CachedNetworkImage(
+                imageUrl: "${house.images.first.image}",
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Image.asset(
-                    'assets/images/warning.png', // Image de remplacement
-
-                    fit: BoxFit.cover,
-                  );
-                },
+                placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                errorWidget: (context, url, error) => Image.asset(
+                  'assets/images/warning.png',
+                  fit: BoxFit.cover,
+                ),
               ),
               const SizedBox(height: 16.0),
               Row(
@@ -97,6 +96,21 @@ class HomeRentDetailPage extends StatelessWidget {
                   if (house.hasBathroom) const Text("wc+douche disponible") else const Text("wc+douche non disponible"),
                 ],
               ),
+              if (house.nearestStopDistanceMeters != null) ...[
+                const SizedBox(height: 8.0),
+                Row(
+                  children: [
+                    const Icon(Icons.directions_bus),
+                    const SizedBox(width: 8.0),
+                    Flexible(
+                      child: Text(
+                        "À ${(house.nearestStopDistanceMeters / 1000).toStringAsFixed(1)} km de ${house.nearestStopName}",
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 16.0),
               Text('Description:', style: Theme.of(context).textTheme.labelMedium),
               const SizedBox(height: 8.0),
@@ -113,16 +127,14 @@ class HomeRentDetailPage extends StatelessWidget {
                   itemBuilder: (context, index) {
                     return Row(
                       children: [
-                        Image.network(
-                          "${house.images[index].image}",
-
+                        CachedNetworkImage(
+                          imageUrl: "${house.images[index].image}",
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Image.asset(
-                              'assets/images/warning.png', // Image de remplacement
-                              fit: BoxFit.cover,
-                            );
-                          },
+                          placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                          errorWidget: (context, url, error) => Image.asset(
+                            'assets/images/warning.png',
+                            fit: BoxFit.cover,
+                          ),
                         ),
                         const SizedBox(width: 30),
                       ],
@@ -138,7 +150,7 @@ class HomeRentDetailPage extends StatelessWidget {
                     // Ajouter l'action de modification ici
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent,
+                    backgroundColor: kAccentColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -152,7 +164,7 @@ class HomeRentDetailPage extends StatelessWidget {
                     _showAddReservationModal(context,house);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
+                    backgroundColor: kAccentColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),

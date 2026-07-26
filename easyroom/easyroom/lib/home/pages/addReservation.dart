@@ -16,9 +16,17 @@ class _AddReservationModalState extends State<AddReservationModal> {
   DateTime? selectedDate;
 
   void _submitForm() async {
-    final date = selectedDate;
+    if (selectedDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.redAccent,
+          content: Text("Veuillez sélectionner une date"),
+        ),
+      );
+      return;
+    }
 
-    ApiService.setReservation(context, {"house_id": widget.house.id, "date": date.toString()});
+    ApiService.setReservation(context, {"house_id": widget.house.id, "date": selectedDate.toString()});
   }
 
   @override

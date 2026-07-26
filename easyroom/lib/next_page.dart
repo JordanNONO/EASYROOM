@@ -15,13 +15,25 @@ class _NextPageState extends State<NextPage> {
   Widget build(BuildContext context) {
 
     var screenHeight = MediaQuery.of(context).size.height;
-    
+    final hasImage = widget.house.images.isNotEmpty;
+    final heroTag = hasImage ? "$API_URL/${widget.house.images.first.image}" : "house-${widget.house.id}";
+
     return  Scaffold(
       body: Stack(
         children: <Widget>[
           SizedBox(height: screenHeight * 0.4,child: Hero(
-          tag: "$API_URL/${widget.house.images.last.image}",
-          child: Image.network("$API_URL/${widget.house.images.first.image}", fit: BoxFit.cover)),),
+          tag: heroTag,
+          child: hasImage
+              ? Image.network(
+                  "$API_URL/${widget.house.images.first.image}",
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: Colors.blueGrey.shade100,
+                    child: const Icon(Icons.house, size: 64, color: Colors.white),
+                  ),
+                )
+              : Container(color: Colors.blueGrey.shade100),
+          ),),
           Container(
             margin: EdgeInsets.only(top: screenHeight * 0.3),
             child: SingleChildScrollView(child: Material(

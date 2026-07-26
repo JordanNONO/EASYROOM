@@ -18,6 +18,11 @@ class House {
   final User user;
   final bool isFavorite;
   final List<HouseImage> images;
+  final double? latitude;
+  final double? longitude;
+  final String? city;
+  final String? nearestStopName;
+  final int? nearestStopDistanceMeters;
   // Vous pouvez également ajouter une liste pour 'options' si nécessaire
 
   House( {
@@ -37,11 +42,17 @@ class House {
     required this.updatedAt,
     required this.user,
     required this.images,
+    this.latitude,
+    this.longitude,
+    this.city,
+    this.nearestStopName,
+    this.nearestStopDistanceMeters,
     // Ajoutez une liste pour 'options' si nécessaire
   });
 
   factory House.fromJson(Map<String, dynamic> json) {
     List<dynamic> imagesJson = json['images'] ?? [];
+    final nearestStop = json['nearest_stop'];
     return House(
       id: json['id'],
       isFavorite: json["favorite"],
@@ -71,6 +82,11 @@ class House {
         'updatedAt': json['User.updatedAt'],
       }),
       images: imagesJson.map((imageJson) => HouseImage.fromJson(imageJson)).toList(),
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
+      city: json['city'],
+      nearestStopName: nearestStop is Map ? nearestStop['name'] : null,
+      nearestStopDistanceMeters: nearestStop is Map ? (nearestStop['distanceMeters'] as num?)?.toInt() : null,
       // Initialisez la liste pour 'options' si nécessaire
     );
   }

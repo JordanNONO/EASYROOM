@@ -1,3 +1,4 @@
+import 'package:easyroom/constants.dart';
 import 'package:easyroom/home/pages/Chat.dart';
 import 'package:easyroom/models/User.dart';
 import 'package:easyroom/requests/ApiService.dart';
@@ -12,6 +13,14 @@ class ReservationList extends StatefulWidget {
 }
 
 class _ReservationListState extends State<ReservationList> {
+  late final Future<List<dynamic>> _reservationsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _reservationsFuture = ApiService.fetchMyReservations();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,11 +29,11 @@ class _ReservationListState extends State<ReservationList> {
         centerTitle: true,
       ),
       body: FutureBuilder(
-        future: ApiService.fetchMyReservations(),
+        future: _reservationsFuture,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(color: Colors.blue),
+              child: CircularProgressIndicator(color: kAccentColor),
             );
           } else if (snapshot.hasError) {
             return const Center(
@@ -78,7 +87,7 @@ class _ReservationListState extends State<ReservationList> {
             );
           } else {
             return const Center(
-              child: CircularProgressIndicator(color: Colors.blue),
+              child: CircularProgressIndicator(color: kAccentColor),
             );
           }
         },

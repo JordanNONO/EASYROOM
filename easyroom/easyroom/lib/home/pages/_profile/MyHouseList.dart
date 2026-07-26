@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easyroom/constants.dart';
 import 'package:easyroom/home/pages/HouseDetail.dart';
 import 'package:easyroom/models/User.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +20,14 @@ class MyHouseListPage extends StatefulWidget {
 }
 
 class _MyHouseListPage extends State<MyHouseListPage> {
+  late final Future<List<House>?> _houseFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _houseFuture = _fetchHouse();
+  }
+
   Future<List<House>?> _fetchHouse() async {
     final token = await storage.read(key: 'token');
 
@@ -46,11 +56,11 @@ class _MyHouseListPage extends State<MyHouseListPage> {
         centerTitle: true,
       ),
       body: FutureBuilder(
-        future: _fetchHouse(),
+        future: _houseFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(color: Colors.blue),
+              child: CircularProgressIndicator(color: kAccentColor),
             );
           } else if (snapshot.hasError) {
             return const Center(
@@ -89,26 +99,29 @@ class _MyHouseListPage extends State<MyHouseListPage> {
                                 ),
                                 Text(
                                   '${houses[index].price} F/mois',
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.blue),
+                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: kAccentColor),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 8),
                             ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                houses[index].images.first.image,
+                              child: CachedNetworkImage(
+                                imageUrl: houses[index].images.first.image,
                                 width: 80,
                                 height: 80,
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Image.asset(
-                                    'assets/images/warning.png', // Image de remplacement
-                                    width: 80,
-                                    height: 80,
-                                    fit: BoxFit.cover,
-                                  );
-                                },
+                                placeholder: (context, url) => const SizedBox(
+                                  width: 80,
+                                  height: 80,
+                                  child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                                ),
+                                errorWidget: (context, url, error) => Image.asset(
+                                  'assets/images/warning.png',
+                                  width: 80,
+                                  height: 80,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                             const SizedBox(height: 8),

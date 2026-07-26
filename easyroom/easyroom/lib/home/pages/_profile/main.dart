@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easyroom/Screens/Login/login_screen.dart';
+import 'package:easyroom/constants.dart';
 import 'package:easyroom/home/pages/profileEdit.dart';
 import 'package:easyroom/models/User.dart';
 import 'package:easyroom/models/House.dart';
+import 'package:easyroom/requests/ApiService.dart';
 import 'package:easyroom/requests/constant.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -18,27 +21,21 @@ class ProfileMain extends StatefulWidget {
 }
 
 class _ProfileMainState extends State<ProfileMain> {
-  late List<House?> gethouses;
+  List<House?> gethouses = [];
+  late final Future<List<dynamic>> _dataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _dataFuture = Future.wait([_fetchUser(), _fetchRecentHouses()]);
+  }
 
   Future<User?> _fetchUser() async {
-    final token = await storage.read(key: 'token');
-
-    final response = await http.get(
-      Uri.parse('$BASE_URL/user/me'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final dynamic clientData = json.decode(response.body);
-      final client = User.fromJson(clientData as Map<String, dynamic>);
-      return client;
-    } else {
-      print('HTTP Error: ${response.statusCode}');
+    final user = await ApiService.fetchCurrentUser();
+    if (user == null && mounted) {
       Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
     }
-    return null;
+    return user;
   }
 
   Future<List<House>?> _fetchRecentHouses() async {
@@ -74,10 +71,10 @@ class _ProfileMainState extends State<ProfileMain> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: FutureBuilder(
-          future: Future.wait([_fetchUser(), _fetchRecentHouses()]),
+          future: _dataFuture,
           builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator(color: Colors.blue));
+              return const Center(child: CircularProgressIndicator(color: kAccentColor));
             } else if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
                 final user = snapshot.data![0] as User;
@@ -140,19 +137,22 @@ class _ProfileMainState extends State<ProfileMain> {
                       Column(
                         children: recentHouses.map<Widget>((house) {
                           return ListTile(
-                            leading: Image.network(
-                              house.images.first.image,
+                            leading: CachedNetworkImage(
+                              imageUrl: house.images.first.image,
                               width: 80,
                               height: 80,
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Image.asset(
-                                  'assets/images/warning.png', // Image de remplacement
-                                  width: 80,
-                                  height: 80,
-                                  fit: BoxFit.cover,
-                                );
-                              },
+                              placeholder: (context, url) => const SizedBox(
+                                width: 80,
+                                height: 80,
+                                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                              ),
+                              errorWidget: (context, url, error) => Image.asset(
+                                'assets/images/warning.png',
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                             title: Text(house.label),
                             subtitle: Text(house.location),

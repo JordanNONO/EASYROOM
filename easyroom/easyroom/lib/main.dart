@@ -80,12 +80,24 @@ class _MyApp extends State<MyApp> {
       theme: ThemeData(
         useMaterial3: true,
         primaryColor: kPrimaryColor,
-        scaffoldBackgroundColor: Colors.white,
+        scaffoldBackgroundColor: kBackgroundColor,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: kPrimaryColor,
+          primary: kPrimaryColor,
+          secondary: kAccentColor,
+          surface: kBackgroundColor,
+          brightness: Brightness.light,
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: kBackgroundColor,
+          foregroundColor: kPrimaryColor,
+          elevation: 0,
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             elevation: 0,
             foregroundColor: Colors.white,
-            backgroundColor: kPrimaryColor,
+            backgroundColor: kAccentColor,
             shape: const StadiumBorder(),
             maximumSize: const Size(double.infinity, 56),
             minimumSize: const Size(double.infinity, 56),
@@ -93,9 +105,9 @@ class _MyApp extends State<MyApp> {
         ),
         inputDecorationTheme: const InputDecorationTheme(
           filled: true,
-          fillColor: kPrimaryLightColor,
-          iconColor: kPrimaryColor,
-          prefixIconColor: kPrimaryColor,
+          fillColor: kAccentLightColor,
+          iconColor: kAccentColor,
+          prefixIconColor: kAccentColor,
           contentPadding: EdgeInsets.symmetric(
               horizontal: defaultPadding, vertical: defaultPadding),
           border: OutlineInputBorder(
@@ -108,5 +120,3 @@ class _MyApp extends State<MyApp> {
     );
   }
 }
-
-const defaultPadding = 16.0;

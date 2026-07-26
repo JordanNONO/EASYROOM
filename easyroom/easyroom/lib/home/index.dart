@@ -1,17 +1,13 @@
-import 'dart:convert';
-
 import 'package:easyroom/Screens/Login/login_screen.dart';
+import 'package:easyroom/constants.dart';
 import 'package:easyroom/home/pages/Home.dart';
 import 'package:easyroom/home/pages/House.dart';
 import 'package:easyroom/home/pages/Profile.dart';
 import 'package:easyroom/home/pages/Reservation.dart';
 import 'package:easyroom/models/User.dart';
-import 'package:easyroom/requests/constant.dart';
+import 'package:easyroom/requests/ApiService.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
 
-const storage = FlutterSecureStorage();
 class HomePage extends StatefulWidget{
   const HomePage({super.key});
 
@@ -22,28 +18,20 @@ class HomePage extends StatefulWidget{
 
 class _HomePage extends State<HomePage>{
   int currentPageIndex = 0;
+  late Future<User?> _userFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _userFuture = _fetchUser();
+  }
+
   Future<User?> _fetchUser() async {
-    final token = await storage.read(key: 'token');
-
-    final response = await http.get(
-      Uri.parse('$BASE_URL/user/me'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-    //print(response.statusCode);
-
-    if (response.statusCode == 200) {
-      final dynamic clientData = json.decode(response.body);
-      final client = User.fromJson(clientData as Map<String, dynamic>);
-      //print(clientData);
-      return client;
-    } else {
-      // Handle HTTP error here
-      print('HTTP Error: ${response.statusCode}');
+    final user = await ApiService.fetchCurrentUser();
+    if (user == null && mounted) {
       Navigator.push(context, MaterialPageRoute(builder: (context)=>const LoginScreen()));
     }
-    return null;
+    return user;
   }
   @override
   Widget build(BuildContext context) {
@@ -56,7 +44,7 @@ class _HomePage extends State<HomePage>{
               currentPageIndex = index;
             });
           },
-          indicatorColor: Colors.blue.shade300,
+          indicatorColor: kAccentColor,
           selectedIndex: currentPageIndex,
           destinations: const <Widget>[
             NavigationDestination(
@@ -84,21 +72,22 @@ class _HomePage extends State<HomePage>{
             ),
           ],
         ),
-        body: FutureBuilder(future: _fetchUser(), builder: (builder,snapshot){
+        body: FutureBuilder(future: _userFuture, builder: (builder,snapshot){
           if(snapshot.connectionState ==ConnectionState.waiting){
-            return const Center(child: CircularProgressIndicator(color: Colors.blue,),);
+            return const Center(child: CircularProgressIndicator(color: kAccentColor,),);
           }else if(snapshot.hasData){
             final user = snapshot.data!;
-            return <Widget>[
-              MainHomePage(user: user,),
-              HousePage(user:user),
-              ReservationPage(user:user),
-              const ProfilePage()
-
-            ][currentPageIndex];
+            return IndexedStack(
+              index: currentPageIndex,
+              children: <Widget>[
+                MainHomePage(user: user,),
+                HousePage(user:user),
+                ReservationPage(user:user),
+                const ProfilePage(),
+              ],
+            );
           }
           else{
-            print(snapshot.error);
             return const Center(
               child: Image(image: AssetImage("assets/images/warning.png")),
             );

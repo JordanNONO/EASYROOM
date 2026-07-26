@@ -1,17 +1,22 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:ui';
 import 'package:easyroom/models/House.dart';
 import 'package:easyroom/requests/constant.dart';
 import 'package:http/http.dart' as http;
 import 'package:easyroom/auth/Login.dart';
 import 'package:easyroom/models/User.dart';
 import 'package:easyroom/next_page.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 const storage = FlutterSecureStorage();
-void main(){
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Skip the login screen if a token is already stored (auto-login).
+  // If the token has since expired, MyApp's fetch calls fail gracefully
+  // and offer a "log back in" action instead of crashing.
+  final token = await storage.read(key: 'token');
   runApp(
      MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -19,7 +24,7 @@ void main(){
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
-      home: const LoginPage(),
+      home: token != null ? const MyApp() : const LoginPage(),
     )
   );
 }
@@ -31,59 +36,78 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late User user;// Define a single User object
+  late final Future<User?> _userFuture;
+  late final Future<List<House>?> _houseFuture;
 
   Future<User?> _fetchUser() async {
     final token = await storage.read(key: 'token');
+    if (token == null) return null;
 
-    final response = await http.get(
-      Uri.parse('$BASE_URL/user/me'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-    //print(response.statusCode);
+    try {
+      final response = await http.get(
+        Uri.parse('$BASE_URL/user/me'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
 
-    if (response.statusCode == 200) {
-      final dynamic clientData = json.decode(response.body);
-      final client = User.fromJson(clientData as Map<String, dynamic>);
-      //print(clientData);
-      return client;
-    } else {
-      // Handle HTTP error here
-      print('HTTP Error: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final dynamic clientData = json.decode(response.body);
+        return User.fromJson(clientData as Map<String, dynamic>);
+      }
+      if (kDebugMode) {
+        print('HTTP Error: ${response.statusCode}');
+      }
+    } catch (error) {
+      if (kDebugMode) {
+        print(error);
+      }
     }
     return null;
   }
   Future<List<House>?> _fetchHouse() async {
     final token = await storage.read(key: 'token');
+    if (token == null) return null;
 
-    final response = await http.get(
-      Uri.parse('$BASE_URL/house'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-    //print(response.statusCode);
+    try {
+      final response = await http.get(
+        Uri.parse('$BASE_URL/house'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
 
-    if (response.statusCode == 200) {
-      final List<dynamic> houseDataList = json.decode(response.body);
-      final List<House> houses = houseDataList.map((houseData) => House.fromJson(houseData)).toList();
-      print(houses);
-      return houses;
-    } else {
-      // Handle HTTP error here
-      print('HTTP Error: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final List<dynamic> houseDataList = json.decode(response.body);
+        return houseDataList.map((houseData) => House.fromJson(houseData)).toList();
+      }
+      if (kDebugMode) {
+        print('HTTP Error: ${response.statusCode}');
+      }
+    } catch (error) {
+      if (kDebugMode) {
+        print(error);
+      }
     }
     return null;
   }
 
+  Future<void> _logout() async {
+    await storage.delete(key: 'token');
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const LoginPage()),
+      (route) => false,
+    );
+  }
 
   @override
   void initState() {
     super.initState();
-
-
+    // Fetch once and reuse the same Future across rebuilds (e.g. bottom-nav
+    // taps calling setState) instead of re-hitting the network every build.
+    _userFuture = _fetchUser();
+    _houseFuture = _fetchHouse();
   }
 
   int index = 1;
@@ -95,8 +119,26 @@ class _MyAppState extends State<MyApp> {
              child: SingleChildScrollView(child: Column(
                crossAxisAlignment: CrossAxisAlignment.start,
                children: <Widget>[
-                 FutureBuilder(future: _fetchUser(), builder: (context,snapshot) {
-                   User user = snapshot.data!;
+                 FutureBuilder<User?>(future: _userFuture, builder: (context,snapshot) {
+                   if (snapshot.connectionState == ConnectionState.waiting) {
+                     return const SizedBox(
+                       height: 50.0,
+                       child: Center(child: CircularProgressIndicator()),
+                     );
+                   }
+                   final user = snapshot.data;
+                   if (user == null) {
+                     return Row(
+                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                       children: <Widget>[
+                         const Text("Session expirée", style: TextStyle(
+                           fontSize: 16.0,
+                           fontWeight: FontWeight.bold,
+                         ),),
+                         TextButton(onPressed: _logout, child: const Text("Se reconnecter")),
+                       ],
+                     );
+                   }
 
                   return Row(
                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -193,7 +235,7 @@ class _MyAppState extends State<MyApp> {
                    height: 400.0,
                    child:
 
-                       FutureBuilder(future: _fetchHouse(), builder: (context,snapshot){
+                       FutureBuilder<List<House>?>(future: _houseFuture, builder: (context,snapshot){
                         if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
                         } else if (snapshot.hasError) {
@@ -249,6 +291,8 @@ class _MyAppState extends State<MyApp> {
     );
   }
   Widget homeWidget(House house){
+    final hasImage = house.images.isNotEmpty;
+    final heroTag = hasImage ? "$API_URL/${house.images.first.image}" : "house-${house.id}";
     return InkWell(
       onTap: (){
        Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
@@ -262,7 +306,7 @@ class _MyAppState extends State<MyApp> {
         child: Stack(
           children: <Widget>[
             Hero(
-              tag: "$API_URL/${house.images.first.image}",
+              tag: heroTag,
               child: Container(
 
                 width: 350.0,
@@ -274,10 +318,11 @@ class _MyAppState extends State<MyApp> {
                       bottomLeft: Radius.circular(30.0),
                       bottomRight: Radius.circular(30.0),
                     ),
-                    image: DecorationImage(
+                    color: Colors.blueGrey.shade100,
+                    image: hasImage ? DecorationImage(
                         image: NetworkImage("$API_URL/${house.images.first.image}"),
                         fit: BoxFit.cover
-                    )
+                    ) : null,
                 ),
               ),
             ),

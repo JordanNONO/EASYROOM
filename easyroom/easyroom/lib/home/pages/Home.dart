@@ -1,6 +1,8 @@
 import 'dart:convert';
 
-import 'package:easyroom/Screens/Login/login_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easyroom/constants.dart';
+import 'package:easyroom/home/pages/CrousResidences.dart';
 import 'package:easyroom/home/pages/HouseDetail.dart';
 import 'package:easyroom/models/House.dart';
 import 'package:easyroom/models/User.dart';
@@ -20,31 +22,14 @@ class MainHomePage extends StatefulWidget {
 }
 
 class _MainHomePage extends State<MainHomePage> {
-  //late User user; // Define a single User object
   late List<House?> searchHouse=[];
   final List<House?> houses = [];
-  Future<User?> _fetchUser() async {
-    final token = await storage.read(key: 'token');
+  late final Future<List<House>?> _houseFuture;
 
-    final response = await http.get(
-      Uri.parse('$BASE_URL/user/me'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-    //print(response.statusCode);
-
-    if (response.statusCode == 200) {
-      final dynamic clientData = json.decode(response.body);
-      final client = User.fromJson(clientData as Map<String, dynamic>);
-      //print(clientData);
-      return client;
-    } else {
-      // Handle HTTP error here
-      print('HTTP Error: ${response.statusCode}');
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>const LoginScreen()));
-    }
-    return null;
+  @override
+  void initState() {
+    super.initState();
+    _houseFuture = _fetchHouse();
   }
 
   Future<List<House>?> _fetchHouse() async {
@@ -114,33 +99,23 @@ class _MainHomePage extends State<MainHomePage> {
           padding: const EdgeInsets.all(10),
           child: Column(
             children: <Widget>[
-              FutureBuilder(
-                  future: _fetchUser(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return const SnackBar(
-                          content: Text("Une erreur s'est produite"));
-                    } else if (snapshot.hasData) {
-                      User user = snapshot.data!;
-
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text("${user.name} ${user.lastname}",
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w800, fontSize: 25)),
-                          const CircleAvatar(
-                            radius: 30,
-                            backgroundImage:
-                                AssetImage('assets/images/default.png'),
-                          ),
-                        ],
-                      );
-                    }
-
-                    return const Text("No data");
-                  }),
+              if (widget.user != null)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text("${widget.user!.name} ${widget.user!.lastname}",
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w800, fontSize: 25)),
+                    const CircleAvatar(
+                      radius: 30,
+                      backgroundImage:
+                          AssetImage('assets/images/default.png'),
+                    ),
+                  ],
+                )
+              else
+                const Text("No data"),
               const SizedBox(
                 height: 35,
               ),
@@ -184,6 +159,35 @@ class _MainHomePage extends State<MainHomePage> {
               const SizedBox(
                 height: 20,
               ),
+              InkWell(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const CrousResidencesPage();
+                  }));
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: kAccentLightColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text(
+                        "Voir les résidences CROUS à Limoges →",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: kAccentColor),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
               const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -193,7 +197,7 @@ class _MainHomePage extends State<MainHomePage> {
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
-                        color: Colors.blue),
+                        color: kAccentColor),
                   ),
                   Text(
                     "Voir plus",
@@ -205,9 +209,9 @@ class _MainHomePage extends State<MainHomePage> {
                 height: 20,
               ),
               Expanded(
-                  child: FutureBuilder(future: _fetchHouse(), builder: (context,snapshot){
+                  child: FutureBuilder(future: _houseFuture, builder: (context,snapshot){
                     if(snapshot.connectionState == ConnectionState.waiting){
-                      return const Center(child: CircularProgressIndicator(color: Colors.blue,));
+                      return const Center(child: CircularProgressIndicator(color: kAccentColor,));
                     }else if(snapshot.connectionState ==ConnectionState.done){
                       if(snapshot.hasError){
                         return const SnackBar(content: Text("Une erreur s'est produite"));
@@ -219,28 +223,54 @@ class _MainHomePage extends State<MainHomePage> {
                             itemBuilder: (context, index) {
                               return ListTile(
                                 title: Text(house[index].label),
-                                leading: Image.network(
-                                  house[index].images.first.image,
+                                leading: CachedNetworkImage(
+                                  imageUrl: house[index].images.first.image,
                                   width: 80,
                                   height: 80,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Image.asset(
-                                      'assets/images/warning.png', // Image de remplacement
-                                      width: 80,
-                                      height: 80,
-                                      fit: BoxFit.cover,
-                                    );
-                                  },
+                                  placeholder: (context, url) => const SizedBox(
+                                    width: 80,
+                                    height: 80,
+                                    child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                                  ),
+                                  errorWidget: (context, url, error) => Image.asset(
+                                    'assets/images/warning.png',
+                                    width: 80,
+                                    height: 80,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                                 onTap: (){
                                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                                     return  HomeRentDetailPage(house:house[index],user: widget.user,);
                                   },));
                                 },
-                                subtitle: Text(
-                                  house[index].description,
-                                  style: const TextStyle(color: Colors.grey),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      house[index].description,
+                                      style: const TextStyle(color: Colors.grey),
+                                    ),
+                                    if (house[index].nearestStopDistanceMeters != null)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 4),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(Icons.directions_bus, size: 14, color: Colors.grey),
+                                            const SizedBox(width: 4),
+                                            Flexible(
+                                              child: Text(
+                                                "À ${(house[index].nearestStopDistanceMeters! / 1000).toStringAsFixed(1)} km de ${house[index].nearestStopName}",
+                                                style: const TextStyle(color: Colors.grey, fontSize: 12),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                  ],
                                 ),
                                 trailing: Text(
                                   "${house[index].price} F/mois",
