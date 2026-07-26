@@ -55,6 +55,13 @@ module.exports = (sequelize, DataTypes) => {
 			price:DataTypes.INTEGER,
 			description: DataTypes.TEXT,
 			user_id: DataTypes.INTEGER,
+			latitude: DataTypes.DECIMAL(9, 6),
+			longitude: DataTypes.DECIMAL(9, 6),
+			city: DataTypes.STRING,
+			citycode: DataTypes.STRING,
+			geocoding_status: DataTypes.STRING,
+			slug: DataTypes.STRING,
+			status: DataTypes.STRING,
 		},
 		{
 			sequelize,

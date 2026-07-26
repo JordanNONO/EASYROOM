@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const JwtStrategy = require("passport-jwt").Strategy,
 	ExtractJwt = require("passport-jwt").ExtractJwt;
 const db = require("../models");
+const { getJwtSecret } = require("../config/jwtSecret");
 
 function localAuth(passport) {
 	passport.use(
@@ -71,7 +72,7 @@ function localAuth(passport) {
 function jwtAuth(passport) {
 	const opts = {};
 	opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-	opts.secretOrKey = process.env.SECRET ?? "hjshd@°#§@¦@°§°§¬¬|@°§°@§#¬§575dAj";
+	opts.secretOrKey = getJwtSecret();
 	passport.use(
 		new JwtStrategy(opts, function (jwt_payload, done) {
 			db.User.findOne({ where: { id: jwt_payload.id }, raw: true }).then(

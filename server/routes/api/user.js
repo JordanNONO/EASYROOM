@@ -6,6 +6,7 @@ const {
 const db = require("../../models");
 const jwt = require("jsonwebtoken");
 const { protect } = require("../../auth/auth");
+const { getJwtSecret } = require("../../config/jwtSecret");
 const { Op, where } = require("sequelize");
 const router = require("express").Router();
 
@@ -76,7 +77,8 @@ router.post("/add", ValidateField, async (req, res) => {
 			password: hashSync(req.body?.password, 10),
 			ren_house: false,
 		});
-		return res.status(201).json(newUser);
+		const { password, ...userWithoutPassword } = newUser.toJSON();
+		return res.status(201).json(userWithoutPassword);
 	} catch (error) {
 		console.log(error);
 		return res.status(500).send("Internal error");
@@ -119,15 +121,20 @@ router.post("/add", ValidateField, async (req, res) => {
 router.post("/update/:id", protect(), ValidateField, ValidateParams, async (req, res) => {
 	try {
 		const { id } = req.params;
-		const newUser = await db.User.update(
-			{
-				...req.body,
-				password: hashSync(req.body?.password, 10),
-				ren_house: req.body?.rent_house ?? false,
-			},
-			{ where: { id } },
-		);
-		return res.status(200).json(newUser);
+		// Un utilisateur ne peut modifier que son propre profil.
+		if (Number(id) !== req.user.id) {
+			return res.status(403).json({ error: "Accès refusé." });
+		}
+		const { name, lastname, contact, birthday, gender_id, password } = req.body;
+		const updates = { name, lastname, contact, birthday, gender_id };
+		if (password) {
+			updates.password = hashSync(password, 10);
+		}
+		await db.User.update(updates, { where: { id } });
+		const updatedUser = await db.User.findByPk(id, {
+			attributes: { exclude: ["password"] },
+		});
+		return res.status(200).json(updatedUser);
 	} catch (error) {
 		return res.status(500).send("Internal error");
 	}
@@ -205,11 +212,7 @@ router.post("/login", ValidateField, async (req, res) => {
 			//extraire le password de l'objet
 			const { password, ...getPayload } = user;
 			const payload = { ...getPayload };
-			const token = jwt.sign(
-				payload,
-				process.env.SECRET ?? "hjshd@°#§@¦@°§°§¬¬|@°§°@§#¬§575dAj",
-				{ expiresIn: "1d" },
-			);
+			const token = jwt.sign(payload, getJwtSecret(), { expiresIn: "1d" });
 			return res.status(200).json({ state: "SUCCESS", token });
 		}
 	} catch (error) {
@@ -236,7 +239,7 @@ router.get("/me/rdv", protect(), async (req, res) => {
 						{ user_id: userId },
 					]
 				}
-			}, { model: db.User }]
+			}, { model: db.User, attributes: { exclude: ["password"] } }]
 		});
 
 		res.status(200).json(rdv);
@@ -275,7 +278,10 @@ router.post("/suscribe", ValidateField, protect(), async (req, res) => {
 })
 router.get("/:id", protect(), async (req, res) => {
 	try {
-		const user = await db.User.findOne({ where: { id: req.params.id } });
+		const user = await db.User.findOne({
+			where: { id: req.params.id },
+			attributes: { exclude: ["password"] },
+		});
 		return res.status(200).json(user)
 	} catch (error) {
 		return res.status(500).send("Internal error")

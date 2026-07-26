@@ -1,28 +1,27 @@
-var admin = require("firebase-admin");
-var serviceAccount = require("../easyroom-17f28-firebase-adminsdk-vstmx-16aba3cdca.json");
+const fs = require("fs");
+const path = require("path");
+const admin = require("firebase-admin");
 
-admin.initializeApp({
-	credential: admin.credential.cert(serviceAccount),
-});
+const serviceAccountPath = path.resolve(
+	process.env.FIREBASE_SERVICE_ACCOUNT_PATH || "./easyroom-firebase-adminsdk.json",
+);
 
-function getAccessToken() {
-	return new Promise(function(resolve, reject) {
-		const key = require("../easyroom-17f28-firebase-adminsdk-vstmx-16aba3cdca.json");
-		const jwtClient = new google.auth.JWT(
-			key.client_email,
-			null,
-			key.private_key,
-			SCOPES,
-			null,
-		);
-		jwtClient.authorize(function(err, tokens) {
-			if (err) {
-				reject(err);
-				return;
-			}
-			resolve(tokens.access_token);
-		});
+let app = null;
+if (fs.existsSync(serviceAccountPath)) {
+	const serviceAccount = require(serviceAccountPath);
+	app = admin.initializeApp({
+		credential: admin.credential.cert(serviceAccount),
 	});
+} else {
+	console.warn(
+		`Firebase désactivé : fichier de clé de service introuvable à ${serviceAccountPath}. Définis FIREBASE_SERVICE_ACCOUNT_PATH dans .env pour l'activer.`,
+	);
+}
+
+async function getAccessToken() {
+	if (!app) throw new Error("Firebase n'est pas configuré (clé de service manquante).");
+	const { access_token } = await app.options.credential.getAccessToken();
+	return access_token;
 }
 
 module.exports = { admin, getAccessToken };

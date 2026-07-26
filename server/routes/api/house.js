@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const db = require("../../models");
 const multer = require("multer")
-const { protect } = require("../../auth/auth");
+const { protect, optionalAuth } = require("../../auth/auth");
 const {
 	ValidateField,
 	ValidateParams,
@@ -9,11 +9,23 @@ const {
 const { Sequelize, where, Op } = require("sequelize");
 /* const { admin } = require("../../lib/firebase"); */
 const cloudinary  =require("cloudinary");
+const { geocodeAddress } = require("../../lib/geocoding");
+const { getLimogesStops } = require("../../lib/limoges-data");
+const { nearestStop } = require("../../lib/geo");
+
+function slugify(text) {
+	return String(text ?? "house")
+		.toLowerCase()
+		.normalize("NFD")
+		.replace(/[̀-ͯ]/g, "")
+		.replace(/[^a-z0-9]+/g, "-")
+		.replace(/(^-|-$)/g, "") || "house";
+}
 
 cloudinary.config({
-	cloud_name: "dvi66ll0e",
-	api_key: "878481519687912",
-	api_secret: "d1z6ATAHE2bUNH-cGbU0dLVL3_A",
+	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+	api_key: process.env.CLOUDINARY_API_KEY,
+	api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 // Configuration de Multer pour l'upload de fichiers
 var storage = multer.diskStorage({
@@ -39,6 +51,46 @@ const upload = multer({
 	},
 });
 
+// Récupère images/options/favori pour un lot de maisons en 3 requêtes au total
+// (au lieu d'aller-retours par maison), et ne considère comme "favori" que celui
+// de l'utilisateur courant.
+async function attachHouseExtras(houses, userId) {
+	const houseIds = houses.map((h) => h.id ?? h["id"]).filter(Boolean);
+	if (houseIds.length === 0) return [];
+
+	const [images, options, favorites, stops] = await Promise.all([
+		db.House_images.findAll({ where: { house_id: { [Op.in]: houseIds } }, raw: true }),
+		db.House_option.findAll({ where: { house_id: { [Op.in]: houseIds } }, raw: true }),
+		userId
+			? db.Favorite.findAll({ where: { user_id: userId, house_id: { [Op.in]: houseIds } }, raw: true })
+			: [],
+		getLimogesStops(),
+	]);
+
+	const imagesByHouse = new Map();
+	for (const image of images) {
+		if (!imagesByHouse.has(image.house_id)) imagesByHouse.set(image.house_id, []);
+		imagesByHouse.get(image.house_id).push(image);
+	}
+	const optionsByHouse = new Map();
+	for (const option of options) {
+		if (!optionsByHouse.has(option.house_id)) optionsByHouse.set(option.house_id, []);
+		optionsByHouse.get(option.house_id).push(option);
+	}
+	const favoritedHouseIds = new Set(favorites.map((f) => f.house_id));
+
+	return houses.map((house) => ({
+		...house,
+		has_bathroom: house.has_bathroom === 1 || house.has_bathroom === true,
+		has_kitchen: house.has_kitchen === 1 || house.has_kitchen === true,
+		is_rent: house.is_rent === 1 || house.is_rent === true,
+		images: imagesByHouse.get(house.id) ?? [],
+		options: optionsByHouse.get(house.id) ?? [],
+		favorite: favoritedHouseIds.has(house.id),
+		nearest_stop: nearestStop(house.latitude, house.longitude, stops),
+	}));
+}
+
 /**
  * @swagger
  * /api/v1/house/recommanded:
@@ -51,12 +103,10 @@ const upload = multer({
  *         description: Successfully retrieved recommended houses
  */
 
-router.get("/recommanded", protect(), async (req, res) => {
+router.get("/recommanded", optionalAuth(), async (req, res) => {
 	try {
-		const Houses = [];
-
 		const popularHouses = await db.House.findAll({
-			include: ['User'],
+			include: [{ association: 'User', attributes: { exclude: ['password'] } }],
 			attributes: {
 				include: [
 					[
@@ -73,23 +123,10 @@ router.get("/recommanded", protect(), async (req, res) => {
 			limit: 5
 		});
 
-		for (const house of popularHouses) {
-			const images = await db.House_images.findAll({ where: { house_id: house.id }, raw: true }) ?? [];
-			const options = await db.House_option.findAll({ where: { house_id: house.id }, raw: true }) ?? [];
-
-			// Check if Favorite is not null
-			const isFavorite = await db.Favorite.findOne({ where: { house_id: house.id } }) !== null;
-
-			Houses.push({
-				...house.dataValues,
-				has_bathroom: house.has_bathroom === 1,
-				has_kitchen: house.has_kitchen === 1,
-				is_rent: house.is_rent === 1,
-				images,
-				options,
-				favorite: isFavorite,
-			});
-		}
+		const Houses = await attachHouseExtras(
+			popularHouses.map((h) => h.toJSON()),
+			req.user?.id,
+		);
 
 		return res.status(200).json(Houses);
 	} catch (error) {
@@ -110,34 +147,18 @@ router.get("/recommanded", protect(), async (req, res) => {
  *         description: Successfully retrieved all houses
  */
 
-router.get("/", protect(), async (_req, res) => {
+router.get("/", optionalAuth(), async (req, res) => {
 	try {
-		const houses = [];
+		const city = req.query.city || "Limoges";
 		const house = await db.House.findAll({
-			include: ["User", "Favorite"],
+			include: [{ association: "User", attributes: { exclude: ["password"] } }],
+			where: {
+				status: "published",
+				[Op.or]: [{ city }, { city: null }],
+			},
 			raw: true,
 		});
-		for (const key in house) {
-			if (Object.hasOwnProperty.call(house, key)) {
-				const getHouse = house[key];
-				const images = await db.House_images.findAll({ where: { house_id: getHouse?.id }, raw: true }) ?? [];
-				const options = await db.House_option.findAll({ where: { house_id: getHouse?.id }, raw: true }) ?? [];
-
-				// Check if Favorite is not null
-				const isFavorite = getHouse["Favorite.house_id"] !== null;
-
-				houses.push({
-					...getHouse,
-					has_bathroom: getHouse.has_bathroom === 1,
-					has_kitchen: getHouse.has_kitchen === 1,
-					is_rent: getHouse.is_rent === 1,
-					images,
-					options,
-					favorite: isFavorite,
-				});
-			}
-		}
-
+		const houses = await attachHouseExtras(house, req.user?.id);
 		return res.status(200).json(houses);
 	} catch (error) {
 		console.log(error);
@@ -157,34 +178,14 @@ router.get("/", protect(), async (_req, res) => {
  *         description: Successfully retrieved all houses
  */
 
-router.get("/me", protect(), async (_req, res) => {
+router.get("/me", protect(), async (req, res) => {
 	try {
-		const houses = [];
 		const house = await db.House.findAll({
-			include: ["User", "Favorite"],
-			where: { user_id: _req.user.id },
+			include: [{ association: "User", attributes: { exclude: ["password"] } }],
+			where: { user_id: req.user.id },
 			raw: true,
 		});
-		for (const key in house) {
-			if (Object.hasOwnProperty.call(house, key)) {
-				const getHouse = house[key];
-				const images = await db.House_images.findAll({ where: { house_id: getHouse?.id }, raw: true }) ?? [];
-				const options = await db.House_option.findAll({ where: { house_id: getHouse?.id }, raw: true }) ?? [];
-
-				// Check if Favorite is not null
-				const isFavorite = getHouse["Favorite.house_id"] !== null;
-
-				houses.push({
-					...getHouse,
-					has_bathroom: getHouse.has_bathroom === 1,
-					has_kitchen: getHouse.has_kitchen === 1,
-					is_rent: getHouse.is_rent === 1,
-					images,
-					options,
-					favorite: isFavorite,
-				});
-			}
-		}
+		const houses = await attachHouseExtras(house, req.user.id);
 		return res.status(200).json(houses);
 	} catch (error) {
 		console.log(error);
@@ -245,18 +246,26 @@ router.post('/add', protect(), upload.array("images"), ValidateField, async (req
 			has_kitchen: kitchen,
 			is_rent: false,
 			user_id: req.user?.id,
+			slug: `${slugify(title)}-${Date.now()}`,
 		});
-		images.map(async (image) => {
-			try {
-				const result = await cloudinary.v2.uploader.upload("./uploads/"+image.filename);
-			const url = result.secure_url;
-			console.log(url)
-			await db.House_images.create({ image: url, house_id: newHouse.id });
-			} catch (error) {
-				console.log(error)
-				
-			}
-		})
+
+		const geocoded = await geocodeAddress(location);
+		if (geocoded) {
+			await newHouse.update({ ...geocoded, geocoding_status: "ok" });
+		} else {
+			await newHouse.update({ geocoding_status: "failed" });
+		}
+
+		await Promise.all(
+			images.map(async (image) => {
+				try {
+					const result = await cloudinary.v2.uploader.upload("./uploads/" + image.filename);
+					await db.House_images.create({ image: result.secure_url, house_id: newHouse.id });
+				} catch (error) {
+					console.log(error);
+				}
+			}),
+		);
 
 		/* const suscribers = await db.Notification_suscriber.findAll({ raw: true });
 		const tokens = suscribers.map(t => t.token);
@@ -311,12 +320,18 @@ router.post('/add', protect(), upload.array("images"), ValidateField, async (req
 
 router.post("/update/:id", protect(), ValidateField, ValidateParams, async (req, res) => {
 	try {
-		const newHouse = await db.House.update(
-			{
-				...req.body,
-			},
-			{ where: { id: req.params.id, user_id: req.user?.id } },
-		);
+		const { label, location, map_location, price, description, nbre_bedroom, has_bathroom, has_kitchen } = req.body;
+		const updates = { label, location, map_location, price, description, nbre_bedroom, has_bathroom, has_kitchen };
+
+		if (location) {
+			const geocoded = await geocodeAddress(location);
+			updates.geocoding_status = geocoded ? "ok" : "failed";
+			if (geocoded) Object.assign(updates, geocoded);
+		}
+
+		const newHouse = await db.House.update(updates, {
+			where: { id: req.params.id, user_id: req.user?.id },
+		});
 		return res.status(200).json(newHouse);
 	} catch (error) {
 		return res.status(500).send("Internal error");
@@ -354,33 +369,20 @@ router.delete("/delete/:id", protect(), ValidateField, ValidateParams, async (re
 });
 
 
-router.get("/search", protect(), async (req, res) => {
+router.get("/search", optionalAuth(), async (req, res) => {
 	try {
 		const { q } = req.query;
-		const house = await db.House.findAll({ where: { [Op.like]: { label: q } },include: ["User", "Favorite"],
-			raw: true, });
-		const houses = [];
-		
-		for (const key in house) {
-			if (Object.hasOwnProperty.call(house, key)) {
-				const getHouse = house[key];
-				const images = await db.House_images.findAll({ where: { house_id: getHouse?.id }, raw: true }) ?? [];
-				const options = await db.House_option.findAll({ where: { house_id: getHouse?.id }, raw: true }) ?? [];
-
-				// Check if Favorite is not null
-				const isFavorite = getHouse["Favorite.house_id"] !== null;
-
-				houses.push({
-					...getHouse,
-					has_bathroom: getHouse.has_bathroom === 1,
-					has_kitchen: getHouse.has_kitchen === 1,
-					is_rent: getHouse.is_rent === 1,
-					images,
-					options,
-					favorite: isFavorite,
-				});
-			}
-		}
+		const city = req.query.city || "Limoges";
+		const house = await db.House.findAll({
+			where: {
+				label: { [Op.like]: `%${q ?? ""}%` },
+				status: "published",
+				[Op.or]: [{ city }, { city: null }],
+			},
+			include: [{ association: "User", attributes: { exclude: ["password"] } }],
+			raw: true,
+		});
+		const houses = await attachHouseExtras(house, req.user?.id);
 
 		return res.status(200).json(houses);
 	} catch (error) {
@@ -388,5 +390,26 @@ router.get("/search", protect(), async (req, res) => {
 	}
 
 })
+
+// IMPORTANT: doit rester la dernière route GET du fichier — un paramètre générique
+// ":id" enregistré plus tôt intercepterait les routes littérales ci-dessus
+// (/recommanded, /me, /search).
+router.get("/:id", optionalAuth(), async (req, res) => {
+	try {
+		const house = await db.House.findOne({
+			where: { id: req.params.id, status: "published" },
+			include: [{ association: "User", attributes: { exclude: ["password"] } }],
+			raw: true,
+		});
+		if (!house) {
+			return res.status(404).json({ message: "House not found" });
+		}
+		const [enriched] = await attachHouseExtras([house], req.user?.id);
+		return res.status(200).json(enriched);
+	} catch (error) {
+		console.log(error);
+		return res.status(500).send("Internal error");
+	}
+});
 
 module.exports = router;

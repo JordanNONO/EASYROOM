@@ -20,8 +20,8 @@ router.get("/:houseId", protect(), async (req, res) => {
 				],
 			},
 			include: [
-				{ model: db.User, as: "Sender" },
-				{ model: db.User, as: "Receiver" },
+				{ model: db.User, as: "Sender", attributes: { exclude: ["password"] } },
+				{ model: db.User, as: "Receiver", attributes: { exclude: ["password"] } },
 				{ model: db.House, as: "House" },
 			],
 		});
